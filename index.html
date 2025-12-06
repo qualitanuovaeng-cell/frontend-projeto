@@ -30,6 +30,10 @@
         background: #e8f0fe;
         cursor: pointer;
     }
+    td.link {
+        color: blue;
+        text-decoration: underline;
+    }
 </style>
 </head>
 <body>
@@ -48,7 +52,7 @@
     <tbody></tbody>
 </table>
 
-<!-- Adicionando PapaParse para ler CSV -->
+<!-- PapaParse para ler CSV -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
 <script>
@@ -69,7 +73,7 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
     header: true,
     complete: function(results) {
         dados = results.data;
-        atualizarTabela(dados);
+        // Não chamamos atualizarTabela aqui para tabela iniciar vazia
     }
 });
 
@@ -77,10 +81,16 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
+    // Se o campo estiver vazio, lista fica vazia
+    if(filtro === "") {
+        atualizarTabela([]);
+        return;
+    }
+
     const filtrado = dados.filter(item =>
         normalize(item.Setor || "").includes(filtro) ||
         normalize(item.Tipo || "").includes(filtro) ||
-        normalize(item.Descricao || "").includes(filtro)
+        normalize(item["Descrição"] || "").includes(filtro)
     );
 
     atualizarTabela(filtrado);
@@ -94,15 +104,16 @@ function atualizarTabela(lista) {
     lista.forEach(item => {
         const tr = document.createElement("tr");
 
+        // Tornar a descrição clicável se houver Link
+        const descricao = item["Descrição"] || "";
+        const link = item.Link || "";
+        const descricaoHTML = link ? `<span class="link" onclick="window.open('${link}', '_blank')">${descricao}</span>` : descricao;
+
         tr.innerHTML = `
             <td>${item.Setor || ""}</td>
             <td>${item.Tipo || ""}</td>
-            <td>${item.Descricao || ""}</td>
+            <td>${descricaoHTML}</td>
         `;
-
-        tr.ondblclick = () => {
-            if(item.Link) window.open(item.Link, "_blank");
-        };
 
         tbody.appendChild(tr);
     });
