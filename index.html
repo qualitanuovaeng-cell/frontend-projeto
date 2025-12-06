@@ -6,11 +6,12 @@
 <style>
     body {
         font-family: Arial, sans-serif;
-        padding: 20px;
-        background: rgb(217,234,211); /* verde chiaro */
+        background-color: rgb(217,234,211);
         margin: 0;
+        padding: 20px;
     }
-    /* Header con logo e titolo */
+
+    /* Header con logo a sinistra e titolo a destra */
     .header {
         display: flex;
         align-items: center;
@@ -27,42 +28,50 @@
         font-size: 24px;
     }
 
-    input {
+    /* Input di ricerca */
+    #busca {
+        display: block;
         width: 100%;
         max-width: 600px;
-        padding: 8px;
         margin: 0 auto 20px auto;
-        display: block;
+        padding: 8px;
         font-size: 14px;
         border-radius: 4px;
         border: 1px solid #ccc;
     }
 
+    /* Tabella */
     table {
         width: 100%;
         max-width: 900px;
         margin: 0 auto;
         border-collapse: collapse;
+        border: 2px solid #555; /* bordo ben visibile */
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* ombra leggera */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         background-color: white;
     }
+
     th, td {
-        border: 1px solid #ccc;
+        border: 1px solid #555;
         padding: 8px;
         font-size: 14px;
         text-align: left;
     }
+
     tbody tr:nth-child(odd) {
         background-color: white;
     }
+
     tbody tr:nth-child(even) {
-        background-color: rgb(217,234,211);
+        background-color: rgb(200,230,200);
     }
+
     tbody tr:hover {
         background-color: #a8cfff;
     }
+
     tbody tr[style*="cursor: pointer;"] td {
         cursor: pointer;
     }
@@ -72,7 +81,7 @@
             font-size: 12px;
             padding: 6px;
         }
-        input {
+        #busca {
             font-size: 12px;
             padding: 6px;
         }
@@ -87,7 +96,7 @@
 </head>
 <body>
 
-<!-- Header con logo a sinistra e titolo a destra -->
+<!-- Header con logo e titolo -->
 <div class="header">
     <img src="Logotipo.png" alt="Logotipo Azienda">
     <h1>Visualizzatore di documenti</h1>
@@ -107,11 +116,9 @@
 </table>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-
 <script>
 let dati = [];
 
-// Normalizza testo
 function normalize(text) {
     return text
         .normalize("NFD")
@@ -120,7 +127,6 @@ function normalize(text) {
         .toLowerCase();
 }
 
-// Mappa colonne
 function mapColumns(item) {
     return {
         Settore: item.Setor || "",
@@ -130,7 +136,7 @@ function mapColumns(item) {
     };
 }
 
-// Carica dati dal CSV pubblicato
+// Carica dati CSV pubblicato
 Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
     download: true,
     header: true,
@@ -139,7 +145,7 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
     }
 });
 
-// Filtro input
+// Filtro
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
@@ -157,7 +163,6 @@ document.getElementById("busca").addEventListener("keyup", function() {
     aggiornaTabella(filtrato);
 });
 
-// Aggiorna tabella
 function aggiornaTabella(lista) {
     const tbody = document.querySelector("#tabela tbody");
     tbody.innerHTML = "";
@@ -174,7 +179,6 @@ function aggiornaTabella(lista) {
         if(item.Link) {
             let linkFinale = item.Link;
 
-            // Se Google Drive con file_id
             if(linkFinale.includes("file_id")) {
                 const fileId = linkFinale.split("=")[1];
                 linkFinale = `https://drive.google.com/uc?export=download&id=${fileId}`;
@@ -193,5 +197,6 @@ function aggiornaTabella(lista) {
 
 </body>
 </html>
+
 
 
