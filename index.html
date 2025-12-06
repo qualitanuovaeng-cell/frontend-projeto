@@ -8,11 +8,11 @@
         font-family: Arial, sans-serif;
         background-color: rgb(217,234,211);
         margin: 0;
-        padding: 10px 0 0 0; /* menos espaço em cima */
+        padding: 10px 0 0 0;
         height: 100vh;
         display: flex;
         justify-content: center;
-        align-items: flex-start; /* alinhado ao topo */
+        align-items: flex-start;
     }
 
     .main-container {
@@ -20,7 +20,7 @@
         max-width: 1000px;
         width: 100%;
         background-color: rgb(217,234,211);
-        padding: 10px 20px; /* menos padding vertical */
+        padding: 10px 20px;
         gap: 40px;
         box-sizing: border-box;
         border-radius: 15px;
@@ -49,7 +49,7 @@
 
     h1 {
         text-align: center;
-        margin-bottom: 10px; /* menos espaço abaixo do título */
+        margin-bottom: 10px;
         font-size: 28px;
     }
 
@@ -70,7 +70,7 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         background-color: white;
         overflow: hidden;
-        table-layout: fixed;
+        table-layout: fixed; /* necessário para largura fixa das colunas */
     }
 
     th {
@@ -78,7 +78,7 @@
         padding: 8px;
         font-size: 14px;
         text-align: left;
-        background-color: #e0e0e0; /* cinza claro para o cabeçalho */
+        background-color: #e0e0e0;
     }
 
     td {
@@ -87,6 +87,22 @@
         font-size: 14px;
         text-align: left;
         word-wrap: break-word;
+    }
+
+    /* Largura personalizada das colunas */
+    #tabela th:nth-child(1),
+    #tabela td:nth-child(1) {
+        width: 20%; /* Settore */
+    }
+
+    #tabela th:nth-child(2),
+    #tabela td:nth-child(2) {
+        width: 20%; /* Tipo */
+    }
+
+    #tabela th:nth-child(3),
+    #tabela td:nth-child(3) {
+        width: 60%; /* Descrizione */
     }
 
     tbody tr:nth-child(odd) {
@@ -222,6 +238,7 @@ function aggiornaTabella(lista) {
 
 </body>
 </html>
+
 
 
 
