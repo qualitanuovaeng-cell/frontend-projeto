@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Consulta de Procedimentos</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f2f2f2;
+    }
+    h1 { text-align: center; }
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-size: 14px;
+    }
+    tr:hover {
+        background: #e8f0fe;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>Consulta de Procedimentos</h1>
+<input type="text" id="busca" placeholder="Digite para buscar (setor, tipo, descrição)...">
+
+<table id="tabela">
+    <thead>
+        <tr>
+            <th>Setor</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+let dados = [];
+
+function normalize(text) {
+    return text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]/g, " ")
+        .toLowerCase();
+}
+
+fetch("/data")
+    .then(r => r.json())
+    .then(json => {
+        dados = json;
+        atualizarTabela(dados);
+    });
+
+document.getElementById("busca").addEventListener("keyup", function() {
+    const filtro = normalize(this.value);
+
+    const filtrado = dados.filter(item =>
+        normalize(item.Setor).includes(filtro) ||
+        normalize(item.Tipo).includes(filtro) ||
+        normalize(item.Descricao).includes(filtro)
+    );
+
+    atualizarTabela(filtrado);
+});
+
+function atualizarTabela(lista) {
+    const tbody = document.querySelector("#tabela tbody");
+    tbody.innerHTML = "";
+
+    lista.forEach(item => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${item.Setor}</td>
+            <td>${item.Tipo}</td>
+            <td>${item.Descricao}</td>
+        `;
+
+        tr.ondblclick = () => {
+            window.open(item.Link, "_blank");
+        };
+
+        tbody.appendChild(tr);
+    });
+}
+</script>
+
+</body>
+</html>
