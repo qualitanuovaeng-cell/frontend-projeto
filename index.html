@@ -8,65 +8,79 @@
         font-family: Arial, sans-serif;
         background-color: rgb(217,234,211);
         margin: 0;
-        padding: 20px;
-    }
-
-    /* Titolo principale */
-    h1 {
-        text-align: center;
-        font-size: 28px;
-        margin-bottom: 30px;
-    }
-
-    /* Contenitore principale: logo a sinistra, tabella a destra */
-    .container {
+        padding: 0;
+        height: 100vh;
         display: flex;
-        justify-content: flex-start; /* logo a sinistra */
-        align-items: flex-start;
-        gap: 20px; /* spazio tra logo e tabella */
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main-container {
+        display: flex;
         max-width: 1000px;
-        margin: 0 auto;
+        width: 100%;
+        background-color: rgb(217,234,211);
+        padding: 20px;
+        gap: 40px;
+        box-sizing: border-box;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    /* Logotipo */
+    /* Logo fixo à esquerda */
+    .logo {
+        flex: 0 0 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .logo img {
-        max-height: 150px; /* aumentato */
-        display: block;
-        margin-right: 20px; /* separazione dalla tabella */
+        max-height: 180px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* Contenitore tabella e ricerca */
+    /* Container da tabela e input */
     .tabella-container {
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
-    /* Input ricerca */
-    #busca {
-        width: 600px; /* uguale alla tabella */
-        padding: 8px;
-        font-size: 14px;
-        border-radius: 8px;
-        border: 2px solid black; /* bordo nero */
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 28px;
     }
 
-    /* Tabella */
+    #busca {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 2px solid black;
+        box-sizing: border-box;
+    }
+
     table {
-        width: 600px;
+        width: 100%;
         border-collapse: collapse;
-        border: 2px solid black; /* bordo nero */
-        border-radius: 10px; /* angoli arrotondati */
+        border: 2px solid black;
+        border-radius: 10px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         background-color: white;
         overflow: hidden;
+        table-layout: fixed;
     }
 
     th, td {
-        border: 1px solid black; /* bordo nero */
+        border: 1px solid black;
         padding: 8px;
         font-size: 14px;
         text-align: left;
+        word-wrap: break-word;
     }
 
     tbody tr:nth-child(odd) {
@@ -74,7 +88,7 @@
     }
 
     tbody tr:nth-child(even) {
-        background-color: rgb(230,245,230); /* verde chiaro */
+        background-color: rgb(230,245,230);
     }
 
     tbody tr:hover {
@@ -85,33 +99,30 @@
         cursor: pointer;
     }
 
-    /* Responsive */
+    /* Responsivo */
     @media (max-width: 800px) {
-        .container {
+        .main-container {
             flex-direction: column;
             align-items: center;
         }
-        #busca, table {
-            width: 90%;
+        .logo {
+            margin-bottom: 20px;
         }
-        .logo img {
-            max-height: 100px;
-            margin-bottom: 10px;
+        #busca, table {
+            width: 95%;
         }
     }
 </style>
 </head>
 <body>
 
-<h1>Visualizzatore di documenti</h1>
-
-<!-- Contenitore con logo a sinistra e tabella a destra -->
-<div class="container">
+<div class="main-container">
     <div class="logo">
         <img src="Logotipo.png" alt="Logotipo Azienda">
     </div>
 
     <div class="tabella-container">
+        <h1>Visualizzatore di documenti</h1>
         <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
         <table id="tabela">
             <thead>
@@ -147,7 +158,6 @@ function mapColumns(item) {
     };
 }
 
-// Carica dati dal CSV pubblicato
 Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
     download: true,
     header: true,
@@ -156,7 +166,6 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
     }
 });
 
-// Filtro input
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
@@ -190,9 +199,10 @@ function aggiornaTabella(lista) {
         if(item.Link) {
             let linkFinale = item.Link;
 
-            if(linkFinale.includes("file_id")) {
-                const fileId = linkFinale.split("=")[1];
-                linkFinale = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            // Converter todos os links do Google Drive para preview
+            if(linkFinale.includes("drive.google.com")) {
+                const fileId = linkFinale.split("/d/")[1].split("/")[0];
+                linkFinale = `https://drive.google.com/file/d/${fileId}/preview`;
             }
 
             tr.style.cursor = "pointer";
@@ -208,6 +218,7 @@ function aggiornaTabella(lista) {
 
 </body>
 </html>
+
 
 
 
