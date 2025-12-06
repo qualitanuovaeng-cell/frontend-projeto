@@ -10,9 +10,22 @@
         margin: 0;
         padding: 10px 0 0 0;
         height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
+    }
+
+    /* Logo fixo */
+    .logo {
+        position: fixed;
+        top: 50%;
+        left: 20px;
+        transform: translateY(-50%);
+        flex: 0 0 auto;
+        z-index: 1000;
+    }
+
+    .logo img {
+        max-height: 150px;
+        border-radius: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
     .main-container {
@@ -25,19 +38,7 @@
         box-sizing: border-box;
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    .logo {
-        flex: 0 0 150px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .logo img {
-        max-height: 150px;
-        border-radius: 20px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        margin-left: 200px; /* espaço para o logo fixo */
     }
 
     .tabella-container {
@@ -70,7 +71,7 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         background-color: white;
         overflow: hidden;
-        table-layout: fixed; /* necessário para largura fixa das colunas */
+        table-layout: fixed;
     }
 
     th {
@@ -121,27 +122,31 @@
         cursor: pointer;
     }
 
+    /* Responsivo */
     @media (max-width: 800px) {
         .main-container {
             flex-direction: column;
             align-items: center;
-        }
-        .logo {
-            margin-bottom: 20px;
+            margin-left: 0; /* remove margem lateral para telas pequenas */
         }
         #busca, table {
             width: 95%;
+        }
+        .logo {
+            position: static;
+            transform: none;
+            margin-bottom: 20px;
         }
     }
 </style>
 </head>
 <body>
 
-<div class="main-container">
-    <div class="logo">
-        <img src="Logotipo.png" alt="Logotipo Azienda">
-    </div>
+<div class="logo">
+    <img src="Logotipo.png" alt="Logotipo Azienda">
+</div>
 
+<div class="main-container">
     <div class="tabella-container">
         <h1>Visualizzatore di documenti</h1>
         <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
