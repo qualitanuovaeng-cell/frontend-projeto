@@ -63,17 +63,14 @@ function normalize(text) {
         .toLowerCase();
 }
 
-// Mapear cabeçalhos da planilha para nomes padrão
+// Mapear colunas pelo índice (opcional) ou usar nomes diretos agora que Descricao está correto
 function mapColumns(item) {
-    let mapped = {};
-    for(const key in item) {
-        const keyNormalized = normalize(key).replace(/\s+/g, "");
-        if(keyNormalized.includes("setor")) mapped.Setor = item[key];
-        else if(keyNormalized.includes("tipo")) mapped.Tipo = item[key];
-        else if(keyNormalized.includes("descricao") || keyNormalized.includes("descriacao")) mapped.Descricao = item[key];
-        else if(keyNormalized.includes("link") || keyNormalized.includes("file_id")) mapped.Link = item[key];
-    }
-    return mapped;
+    return {
+        Setor: item.Setor || "",
+        Tipo: item.Tipo || "",
+        Descricao: item.Descricao || "",
+        Link: item.Link || ""
+    };
 }
 
 // Carregar dados da planilha publicada como CSV
@@ -82,7 +79,7 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
     header: true,
     complete: function(results) {
         dados = results.data.map(mapColumns);
-        // tabela inicia vazia, não atualizamos ainda
+        // tabela inicia vazia
     }
 });
 
@@ -97,9 +94,9 @@ document.getElementById("busca").addEventListener("keyup", function() {
     }
 
     const filtrado = dados.filter(item =>
-        normalize(item.Setor || "").includes(filtro) ||
-        normalize(item.Tipo || "").includes(filtro) ||
-        normalize(item.Descricao || "").includes(filtro)
+        normalize(item.Setor).includes(filtro) ||
+        normalize(item.Tipo).includes(filtro) ||
+        normalize(item.Descricao).includes(filtro)
     );
 
     atualizarTabela(filtrado);
@@ -113,25 +110,25 @@ function atualizarTabela(lista) {
     lista.forEach(item => {
         const tr = document.createElement("tr");
 
-        const descricao = item.Descricao || "";
-        const link = item.Link || "";
-
         tr.innerHTML = `
-            <td>${item.Setor || ""}</td>
-            <td>${item.Tipo || ""}</td>
-            <td>${descricao}</td>
+            <td>${item.Setor}</td>
+            <td>${item.Tipo}</td>
+            <td>${item.Descricao}</td>
         `;
 
         // Tornar toda a linha clicável se houver link
-        if(link) {
+        if(item.Link) {
+            let linkFinal = item.Link;
+
+            // Se for Google Drive com file_id, gerar link de download direto
+            if(linkFinal.includes("file_id")) {
+                const fileId = linkFinal.split("=")[1];
+                linkFinal = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            }
+
+            tr.style.cursor = "pointer";
             tr.onclick = () => {
-                // Se for Google Drive, transformar file_id em link direto
-                if(link.includes("file_id")) {
-                    const fileId = link.split("=")[1];
-                    window.open(`https://drive.google.com/uc?export=download&id=${fileId}`, "_blank");
-                } else {
-                    window.open(link, "_blank");
-                }
+                window.open(linkFinal, "_blank");
             };
         }
 
