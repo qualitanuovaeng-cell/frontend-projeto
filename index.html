@@ -11,34 +11,32 @@
         padding: 20px;
     }
 
-    /* Contenitore principale: logo a sinistra, tabella a destra */
-    .container {
-        display: flex;
-        justify-content: flex-end; /* spinge la tabella più a destra */
-        align-items: flex-start;
-        max-width: 1000px;
-        margin: 0 auto;
-        gap: 20px; /* spazio tra logo e tabella */
-    }
-
-    /* Logotipo */
-    .logo {
-        flex-shrink: 0;
-    }
-    .logo img {
-        max-height: 120px; /* logotipo più grande */
-    }
-
-    /* Input ricerca sopra la tabella */
+    /* Input ricerca */
     #busca {
         display: block;
         width: 60%;
         max-width: 600px;
-        margin: 0 0 20px auto;
+        margin: 0 auto 20px auto;
         padding: 8px;
         font-size: 14px;
         border-radius: 4px;
         border: 2px solid black; /* bordo nero */
+    }
+
+    /* Contenitore principale: logo a sinistra, tabella a destra */
+    .container {
+        display: flex;
+        justify-content: flex-end; /* spinge tabella a destra */
+        align-items: flex-start;
+        gap: 20px; /* spazio tra logo e tabella */
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    /* Logotipo */
+    .logo img {
+        max-height: 120px; /* logotipo più grande */
+        display: block;
     }
 
     /* Tabella */
@@ -93,10 +91,10 @@
 </head>
 <body>
 
-<!-- Input ricerca sopra la tabella -->
+<!-- Input ricerca -->
 <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
 
-<!-- Container con logo a sinistra e tabella a destra -->
+<!-- Contenitore con logo a sinistra e tabella a destra -->
 <div class="container">
     <div class="logo">
         <img src="Logotipo.png" alt="Logotipo Azienda">
