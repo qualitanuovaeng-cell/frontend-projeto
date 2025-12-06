@@ -11,32 +11,43 @@
         padding: 20px;
     }
 
-    /* Input ricerca */
-    #busca {
-        display: block;
-        width: 60%;
-        max-width: 600px;
-        margin: 0 auto 20px auto;
-        padding: 8px;
-        font-size: 14px;
-        border-radius: 4px;
-        border: 2px solid black; /* bordo nero */
+    /* Titolo principale */
+    h1 {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 30px;
     }
 
     /* Contenitore principale: logo a sinistra, tabella a destra */
     .container {
         display: flex;
-        justify-content: flex-end; /* spinge tabella a destra */
+        justify-content: flex-start; /* logo a sinistra */
         align-items: flex-start;
-        gap: 20px; /* spazio tra logo e tabella */
+        gap: 50px; /* spazio tra logo e tabella */
         max-width: 1000px;
         margin: 0 auto;
     }
 
     /* Logotipo */
     .logo img {
-        max-height: 120px; /* logotipo più grande */
+        max-height: 120px;
         display: block;
+    }
+
+    /* Contenitore tabella e ricerca */
+    .tabella-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Input ricerca */
+    #busca {
+        width: 600px; /* allineato con la tabella */
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 2px solid black; /* bordo nero */
     }
 
     /* Tabella */
@@ -44,8 +55,10 @@
         width: 600px;
         border-collapse: collapse;
         border: 2px solid black; /* bordo nero */
+        border-radius: 10px; /* angoli arrotondati */
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         background-color: white;
+        overflow: hidden;
     }
 
     th, td {
@@ -76,10 +89,7 @@
             flex-direction: column;
             align-items: center;
         }
-        #busca {
-            width: 90%;
-        }
-        table {
+        #busca, table {
             width: 90%;
         }
         .logo img {
@@ -91,24 +101,27 @@
 </head>
 <body>
 
-<!-- Input ricerca -->
-<input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
+<h1>Visualizzatore di documenti</h1>
 
 <!-- Contenitore con logo a sinistra e tabella a destra -->
 <div class="container">
     <div class="logo">
         <img src="Logotipo.png" alt="Logotipo Azienda">
     </div>
-    <table id="tabela">
-        <thead>
-            <tr>
-                <th>Settore</th>
-                <th>Tipo</th>
-                <th>Descrizione</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+
+    <div class="tabella-container">
+        <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
+        <table id="tabela">
+            <thead>
+                <tr>
+                    <th>Settore</th>
+                    <th>Tipo</th>
+                    <th>Descrizione</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
@@ -193,6 +206,7 @@ function aggiornaTabella(lista) {
 
 </body>
 </html>
+
 
 
 
