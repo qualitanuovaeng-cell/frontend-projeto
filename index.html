@@ -1,19 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Consulta de Procedimentos</title>
+<title>Visualizzatore di documenti</title>
 <style>
     body {
         font-family: Arial, sans-serif;
         padding: 20px;
-        background: rgb(217,234,211); /* verde claro */
+        background: rgb(217,234,211); /* verde chiaro */
         margin: 0;
     }
-    h1 {
-        text-align: center;
-        margin-bottom: 20px;
+    /* Header con logo e titolo */
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        max-width: 900px;
+        margin: 0 auto 20px auto;
     }
+    .header img {
+        max-height: 50px;
+        margin-right: 15px;
+    }
+    .header h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
     input {
         width: 100%;
         max-width: 600px;
@@ -24,29 +37,31 @@
         border-radius: 4px;
         border: 1px solid #ccc;
     }
+
     table {
         width: 100%;
-        border-collapse: collapse;
         max-width: 900px;
         margin: 0 auto;
-        background: white;
-        border-radius: 6px;
+        border-collapse: collapse;
+        border-radius: 8px;
         overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* ombra leggera */
+        background-color: white;
     }
     th, td {
         border: 1px solid #ccc;
         padding: 8px;
-        font-size: 13px;
+        font-size: 14px;
         text-align: left;
     }
     tbody tr:nth-child(odd) {
         background-color: white;
     }
     tbody tr:nth-child(even) {
-        background-color: rgb(217,234,211); /* tom verde suave */
+        background-color: rgb(217,234,211);
     }
     tbody tr:hover {
-        background-color: #a8cfff; /* azul hover padrão */
+        background-color: #a8cfff;
     }
     tbody tr[style*="cursor: pointer;"] td {
         cursor: pointer;
@@ -61,41 +76,42 @@
             font-size: 12px;
             padding: 6px;
         }
-        img#logo {
+        .header img {
             max-height: 40px;
+        }
+        .header h1 {
+            font-size: 18px;
         }
     }
 </style>
 </head>
 <body>
 
-<!-- Logotipo -->
-<div style="text-align:center; margin-bottom: 10px;">
-    <img id="logo" src="logotipo.png" alt="Logotipo da Empresa" style="max-height:50px;">
+<!-- Header con logo a sinistra e titolo a destra -->
+<div class="header">
+    <img src="Logotipo.png" alt="Logotipo Azienda">
+    <h1>Visualizzatore di documenti</h1>
 </div>
 
-<h1>Consulta de Procedimentos</h1>
-
-<input type="text" id="busca" placeholder="Digite para buscar (setor, tipo, descrição)...">
+<input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
 
 <table id="tabela">
     <thead>
         <tr>
-            <th>Setor</th>
+            <th>Settore</th>
             <th>Tipo</th>
-            <th>Descrição</th>
+            <th>Descrizione</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
 
-<!-- PapaParse para ler CSV -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
 <script>
-let dados = [];
+let dati = [];
 
-// Normaliza texto para filtro (remove acentos e caracteres especiais)
+// Normalizza testo
 function normalize(text) {
     return text
         .normalize("NFD")
@@ -104,46 +120,45 @@ function normalize(text) {
         .toLowerCase();
 }
 
-// Mapear colunas da planilha
+// Mappa colonne
 function mapColumns(item) {
     return {
-        Setor: item.Setor || "",
+        Settore: item.Setor || "",
         Tipo: item.Tipo || "",
-        Descricao: item.Descricao || "",
+        Descrizione: item.Descricao || "",
         Link: item.Link || ""
     };
 }
 
-// Carregar dados da planilha publicada como CSV
+// Carica dati dal CSV pubblicato
 Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
     download: true,
     header: true,
     complete: function(results) {
-        dados = results.data.map(mapColumns);
-        // tabela inicia vazia
+        dati = results.data.map(mapColumns);
     }
 });
 
-// Filtro do input
+// Filtro input
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
     if(filtro === "") {
-        atualizarTabela([]);
+        aggiornaTabella([]);
         return;
     }
 
-    const filtrado = dados.filter(item =>
-        normalize(item.Setor).includes(filtro) ||
+    const filtrato = dati.filter(item =>
+        normalize(item.Settore).includes(filtro) ||
         normalize(item.Tipo).includes(filtro) ||
-        normalize(item.Descricao).includes(filtro)
+        normalize(item.Descrizione).includes(filtro)
     );
 
-    atualizarTabela(filtrado);
+    aggiornaTabella(filtrato);
 });
 
-// Atualiza tabela
-function atualizarTabela(lista) {
+// Aggiorna tabella
+function aggiornaTabella(lista) {
     const tbody = document.querySelector("#tabela tbody");
     tbody.innerHTML = "";
 
@@ -151,23 +166,23 @@ function atualizarTabela(lista) {
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
-            <td>${item.Setor}</td>
+            <td>${item.Settore}</td>
             <td>${item.Tipo}</td>
-            <td>${item.Descricao}</td>
+            <td>${item.Descrizione}</td>
         `;
 
         if(item.Link) {
-            let linkFinal = item.Link;
+            let linkFinale = item.Link;
 
-            // Se for Google Drive com file_id
-            if(linkFinal.includes("file_id")) {
-                const fileId = linkFinal.split("=")[1];
-                linkFinal = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            // Se Google Drive con file_id
+            if(linkFinale.includes("file_id")) {
+                const fileId = linkFinale.split("=")[1];
+                linkFinale = `https://drive.google.com/uc?export=download&id=${fileId}`;
             }
 
             tr.style.cursor = "pointer";
             tr.onclick = () => {
-                window.open(linkFinal, "_blank");
+                window.open(linkFinale, "_blank");
             };
         }
 
@@ -178,5 +193,4 @@ function atualizarTabela(lista) {
 
 </body>
 </html>
-
 
