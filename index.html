@@ -8,9 +8,9 @@
         font-family: Arial, sans-serif;
         background-color: rgb(217,234,211);
         margin: 0;
-        padding: 20px 20px 0 20px;
+        padding: 20px;
         height: 100vh;
-        overflow: auto;
+        overflow: hidden;
     }
 
     /* Logo fixo no topo à esquerda */
@@ -29,71 +29,49 @@
 
     .main-container {
         display: flex;
+        flex-direction: column;
         max-width: 1000px;
         width: 100%;
-        background-color: rgb(217,234,211);
-        padding: 10px 20px 20px 220px; /* espaço à esquerda para o logo */
-        gap: 40px;
+        margin-left: 200px; /* espaço para o logo fixo */
+        gap: 20px;
         box-sizing: border-box;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
     .tabella-container {
-        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
     h1 {
-        text-align: center;
-        margin-bottom: 10px;
         font-size: 28px;
-        position: sticky;
-        top: 0;
-        background-color: rgb(217,234,211);
-        z-index: 500;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        margin: 0;
     }
 
     #busca {
-        width: 100%;
         padding: 10px;
         font-size: 14px;
         border-radius: 8px;
         border: 2px solid black;
+        width: 100%;
         box-sizing: border-box;
-        position: sticky;
-        top: 58px; /* altura do título */
-        background-color: rgb(217,234,211);
-        z-index: 400;
+    }
+
+    /* Container com scroll próprio */
+    .table-wrapper {
+        max-height: 500px; /* ajuste a altura que quiser */
+        overflow-y: auto;
+        border: 2px solid black;
+        border-radius: 10px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        border: 2px solid black;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        background-color: white;
-        overflow: hidden;
         table-layout: fixed;
     }
 
-    th {
-        border: 1px solid black;
-        padding: 8px;
-        font-size: 14px;
-        text-align: left;
-        background-color: #e0e0e0;
-        position: sticky;
-        top: 100px; /* altura título + input */
-        z-index: 300;
-    }
-
-    td {
+    th, td {
         border: 1px solid black;
         padding: 8px;
         font-size: 14px;
@@ -101,7 +79,14 @@
         word-wrap: break-word;
     }
 
-    /* Largura personalizada das colunas */
+    th {
+        background-color: #e0e0e0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    /* Largura das colunas */
     #tabela th:nth-child(1),
     #tabela td:nth-child(1) { width: 20%; }
     #tabela th:nth-child(2),
@@ -115,7 +100,7 @@
     tbody tr[style*="cursor: pointer;"] td { cursor: pointer; }
 
     @media (max-width: 800px) {
-        .main-container { flex-direction: column; padding-left: 20px; }
+        .main-container { margin-left: 20px; }
         #busca, table { width: 95%; }
         .logo { position: static; margin-bottom: 20px; }
     }
@@ -128,9 +113,11 @@
 </div>
 
 <div class="main-container">
-    <div class="tabella-container">
-        <h1>Visualizzatore di documenti</h1>
-        <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
+    <h1>Visualizzatore di documenti</h1>
+    <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
+
+    <!-- container com scroll próprio -->
+    <div class="table-wrapper">
         <table id="tabela">
             <thead>
                 <tr>
