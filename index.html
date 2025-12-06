@@ -11,41 +11,41 @@
         padding: 20px;
     }
 
-    /* Header con titolo sopra al logo */
-    .header {
-        text-align: left;
-        max-width: 900px;
-        margin: 0 auto 20px auto;
-    }
-    .header h1 {
-        font-size: 28px;
-        margin-bottom: 10px;
-    }
-    .header img {
-        max-height: 80px; /* logotipo più grande */
+    /* Contenitore principale: logo a sinistra, tabella a destra */
+    .container {
+        display: flex;
+        justify-content: flex-end; /* spinge la tabella più a destra */
+        align-items: flex-start;
+        max-width: 1000px;
+        margin: 0 auto;
+        gap: 20px; /* spazio tra logo e tabella */
     }
 
-    /* Input di ricerca */
+    /* Logotipo */
+    .logo {
+        flex-shrink: 0;
+    }
+    .logo img {
+        max-height: 120px; /* logotipo più grande */
+    }
+
+    /* Input ricerca sopra la tabella */
     #busca {
         display: block;
-        width: 100%;
+        width: 60%;
         max-width: 600px;
-        margin: 0 auto 20px auto;
+        margin: 0 0 20px auto;
         padding: 8px;
         font-size: 14px;
         border-radius: 4px;
-        border: 2px solid black; /* bordo nero come richiesto */
+        border: 2px solid black; /* bordo nero */
     }
 
     /* Tabella */
     table {
-        width: 60%; /* più piccola e centrata a destra */
-        margin-left: auto;
-        margin-right: 0;
+        width: 600px;
         border-collapse: collapse;
         border: 2px solid black; /* bordo nero */
-        border-radius: 8px;
-        overflow: hidden;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         background-color: white;
     }
@@ -62,7 +62,7 @@
     }
 
     tbody tr:nth-child(even) {
-        background-color: rgb(230,245,230); /* verde più chiaro */
+        background-color: rgb(230,245,230); /* verde chiaro */
     }
 
     tbody tr:hover {
@@ -73,48 +73,45 @@
         cursor: pointer;
     }
 
-    @media (max-width: 600px) {
-        th, td {
-            font-size: 12px;
-            padding: 6px;
+    @media (max-width: 800px) {
+        .container {
+            flex-direction: column;
+            align-items: center;
         }
         #busca {
-            font-size: 12px;
-            padding: 6px;
-        }
-        .header h1 {
-            font-size: 20px;
-        }
-        .header img {
-            max-height: 60px;
+            width: 90%;
         }
         table {
-            width: 100%;
-            margin-left: 0;
+            width: 90%;
+        }
+        .logo img {
+            max-height: 80px;
+            margin-bottom: 10px;
         }
     }
 </style>
 </head>
 <body>
 
-<!-- Header con titolo sopra al logo -->
-<div class="header">
-    <h1>Visualizzatore di documenti</h1>
-    <img src="Logotipo.png" alt="Logotipo Azienda">
-</div>
-
+<!-- Input ricerca sopra la tabella -->
 <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
 
-<table id="tabela">
-    <thead>
-        <tr>
-            <th>Settore</th>
-            <th>Tipo</th>
-            <th>Descrizione</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+<!-- Container con logo a sinistra e tabella a destra -->
+<div class="container">
+    <div class="logo">
+        <img src="Logotipo.png" alt="Logotipo Azienda">
+    </div>
+    <table id="tabela">
+        <thead>
+            <tr>
+                <th>Settore</th>
+                <th>Tipo</th>
+                <th>Descrizione</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
@@ -137,6 +134,7 @@ function mapColumns(item) {
     };
 }
 
+// Carica dati dal CSV pubblicato
 Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
     download: true,
     header: true,
@@ -145,6 +143,7 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
     }
 });
 
+// Filtro input
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
@@ -196,6 +195,7 @@ function aggiornaTabella(lista) {
 
 </body>
 </html>
+
 
 
 
