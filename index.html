@@ -7,34 +7,75 @@
     body {
         font-family: Arial, sans-serif;
         padding: 20px;
-        background: #f2f2f2;
+        background: rgb(217,234,211); /* verde claro */
+        margin: 0;
     }
-    h1 { text-align: center; }
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
     input {
         width: 100%;
-        padding: 10px;
-        margin-bottom: 20px;
-        font-size: 16px;
+        max-width: 600px;
+        padding: 8px;
+        margin: 0 auto 20px auto;
+        display: block;
+        font-size: 14px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
     }
     table {
         width: 100%;
         border-collapse: collapse;
+        max-width: 900px;
+        margin: 0 auto;
         background: white;
+        border-radius: 6px;
+        overflow: hidden;
     }
     th, td {
         border: 1px solid #ccc;
-        padding: 10px;
-        font-size: 14px;
+        padding: 8px;
+        font-size: 13px;
+        text-align: left;
     }
-    tr:hover {
-        background: #e8f0fe;
+    tbody tr:nth-child(odd) {
+        background-color: white;
+    }
+    tbody tr:nth-child(even) {
+        background-color: rgb(217,234,211); /* tom verde suave */
+    }
+    tbody tr:hover {
+        background-color: #a8cfff; /* azul hover padrão */
+    }
+    tbody tr[style*="cursor: pointer;"] td {
         cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+        th, td {
+            font-size: 12px;
+            padding: 6px;
+        }
+        input {
+            font-size: 12px;
+            padding: 6px;
+        }
+        img#logo {
+            max-height: 40px;
+        }
     }
 </style>
 </head>
 <body>
 
+<!-- Logotipo -->
+<div style="text-align:center; margin-bottom: 10px;">
+    <img id="logo" src="logo.png" alt="Logotipo da Empresa" style="max-height:50px;">
+</div>
+
 <h1>Consulta de Procedimentos</h1>
+
 <input type="text" id="busca" placeholder="Digite para buscar (setor, tipo, descrição)...">
 
 <table id="tabela">
@@ -54,7 +95,7 @@
 <script>
 let dados = [];
 
-// Função para normalizar texto (remover acentos e caracteres especiais)
+// Normaliza texto para filtro (remove acentos e caracteres especiais)
 function normalize(text) {
     return text
         .normalize("NFD")
@@ -63,7 +104,7 @@ function normalize(text) {
         .toLowerCase();
 }
 
-// Mapear colunas pelo índice (opcional) ou usar nomes diretos agora que Descricao está correto
+// Mapear colunas da planilha
 function mapColumns(item) {
     return {
         Setor: item.Setor || "",
@@ -87,7 +128,6 @@ Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-u
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
-    // Campo vazio = tabela vazia
     if(filtro === "") {
         atualizarTabela([]);
         return;
@@ -102,7 +142,7 @@ document.getElementById("busca").addEventListener("keyup", function() {
     atualizarTabela(filtrado);
 });
 
-// Função para atualizar a tabela
+// Atualiza tabela
 function atualizarTabela(lista) {
     const tbody = document.querySelector("#tabela tbody");
     tbody.innerHTML = "";
@@ -116,11 +156,10 @@ function atualizarTabela(lista) {
             <td>${item.Descricao}</td>
         `;
 
-        // Tornar toda a linha clicável se houver link
         if(item.Link) {
             let linkFinal = item.Link;
 
-            // Se for Google Drive com file_id, gerar link de download direto
+            // Se for Google Drive com file_id
             if(linkFinal.includes("file_id")) {
                 const fileId = linkFinal.split("=")[1];
                 linkFinal = `https://drive.google.com/uc?export=download&id=${fileId}`;
