@@ -8,17 +8,16 @@
         font-family: Arial, sans-serif;
         background-color: rgb(217,234,211);
         margin: 0;
-        padding: 10px 0 0 0;
+        padding: 20px 20px 0 20px;
         height: 100vh;
+        overflow: auto;
     }
 
-    /* Logo fixo */
+    /* Logo fixo no topo à esquerda */
     .logo {
         position: fixed;
-        top: 50%;
+        top: 20px;
         left: 20px;
-        transform: translateY(-50%);
-        flex: 0 0 auto;
         z-index: 1000;
     }
 
@@ -33,12 +32,11 @@
         max-width: 1000px;
         width: 100%;
         background-color: rgb(217,234,211);
-        padding: 10px 20px;
+        padding: 10px 20px 20px 220px; /* espaço à esquerda para o logo */
         gap: 40px;
         box-sizing: border-box;
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        margin-left: 200px; /* espaço para o logo fixo */
     }
 
     .tabella-container {
@@ -52,6 +50,12 @@
         text-align: center;
         margin-bottom: 10px;
         font-size: 28px;
+        position: sticky;
+        top: 0;
+        background-color: rgb(217,234,211);
+        z-index: 500;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 
     #busca {
@@ -61,6 +65,10 @@
         border-radius: 8px;
         border: 2px solid black;
         box-sizing: border-box;
+        position: sticky;
+        top: 58px; /* altura do título */
+        background-color: rgb(217,234,211);
+        z-index: 400;
     }
 
     table {
@@ -80,6 +88,9 @@
         font-size: 14px;
         text-align: left;
         background-color: #e0e0e0;
+        position: sticky;
+        top: 100px; /* altura título + input */
+        z-index: 300;
     }
 
     td {
@@ -92,51 +103,21 @@
 
     /* Largura personalizada das colunas */
     #tabela th:nth-child(1),
-    #tabela td:nth-child(1) {
-        width: 20%; /* Settore */
-    }
-
+    #tabela td:nth-child(1) { width: 20%; }
     #tabela th:nth-child(2),
-    #tabela td:nth-child(2) {
-        width: 20%; /* Tipo */
-    }
-
+    #tabela td:nth-child(2) { width: 20%; }
     #tabela th:nth-child(3),
-    #tabela td:nth-child(3) {
-        width: 60%; /* Descrizione */
-    }
+    #tabela td:nth-child(3) { width: 60%; }
 
-    tbody tr:nth-child(odd) {
-        background-color: white;
-    }
+    tbody tr:nth-child(odd) { background-color: white; }
+    tbody tr:nth-child(even) { background-color: rgb(230,245,230); }
+    tbody tr:hover { background-color: #a8cfff; }
+    tbody tr[style*="cursor: pointer;"] td { cursor: pointer; }
 
-    tbody tr:nth-child(even) {
-        background-color: rgb(230,245,230);
-    }
-
-    tbody tr:hover {
-        background-color: #a8cfff;
-    }
-
-    tbody tr[style*="cursor: pointer;"] td {
-        cursor: pointer;
-    }
-
-    /* Responsivo */
     @media (max-width: 800px) {
-        .main-container {
-            flex-direction: column;
-            align-items: center;
-            margin-left: 0; /* remove margem lateral para telas pequenas */
-        }
-        #busca, table {
-            width: 95%;
-        }
-        .logo {
-            position: static;
-            transform: none;
-            margin-bottom: 20px;
-        }
+        .main-container { flex-direction: column; padding-left: 20px; }
+        #busca, table { width: 95%; }
+        .logo { position: static; margin-bottom: 20px; }
     }
 </style>
 </head>
@@ -224,7 +205,6 @@ function aggiornaTabella(lista) {
 
         if(item.Link) {
             let linkFinale = item.Link;
-
             if(linkFinale.includes("drive.google.com")) {
                 const fileId = linkFinale.split("/d/")[1].split("/")[0];
                 linkFinale = `https://drive.google.com/file/d/${fileId}/preview`;
