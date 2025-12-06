@@ -8,11 +8,11 @@
         font-family: Arial, sans-serif;
         background-color: rgb(217,234,211);
         margin: 0;
-        padding: 0;
+        padding: 10px 0 0 0; /* menos espaço em cima */
         height: 100vh;
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start; /* alinhado ao topo */
     }
 
     .main-container {
@@ -20,14 +20,13 @@
         max-width: 1000px;
         width: 100%;
         background-color: rgb(217,234,211);
-        padding: 20px;
+        padding: 10px 20px; /* menos padding vertical */
         gap: 40px;
         box-sizing: border-box;
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
-    /* Logo fixo à esquerda */
     .logo {
         flex: 0 0 150px;
         display: flex;
@@ -41,7 +40,6 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* Container da tabela e input */
     .tabella-container {
         flex: 1;
         display: flex;
@@ -51,7 +49,7 @@
 
     h1 {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px; /* menos espaço abaixo do título */
         font-size: 28px;
     }
 
@@ -75,7 +73,15 @@
         table-layout: fixed;
     }
 
-    th, td {
+    th {
+        border: 1px solid black;
+        padding: 8px;
+        font-size: 14px;
+        text-align: left;
+        background-color: #e0e0e0; /* cinza claro para o cabeçalho */
+    }
+
+    td {
         border: 1px solid black;
         padding: 8px;
         font-size: 14px;
@@ -99,7 +105,6 @@
         cursor: pointer;
     }
 
-    /* Responsivo */
     @media (max-width: 800px) {
         .main-container {
             flex-direction: column;
@@ -199,7 +204,6 @@ function aggiornaTabella(lista) {
         if(item.Link) {
             let linkFinale = item.Link;
 
-            // Converter todos os links do Google Drive para preview
             if(linkFinale.includes("drive.google.com")) {
                 const fileId = linkFinale.split("/d/")[1].split("/")[0];
                 linkFinale = `https://drive.google.com/file/d/${fileId}/preview`;
