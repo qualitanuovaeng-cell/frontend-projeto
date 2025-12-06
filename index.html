@@ -48,9 +48,13 @@
     <tbody></tbody>
 </table>
 
+<!-- Adicionando PapaParse para ler CSV -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+
 <script>
 let dados = [];
 
+// Função para normalizar texto (remover acentos e caracteres especiais)
 function normalize(text) {
     return text
         .normalize("NFD")
@@ -59,25 +63,30 @@ function normalize(text) {
         .toLowerCase();
 }
 
-fetch("/data")
-    .then(r => r.json())
-    .then(json => {
-        dados = json;
+// Carregar dados da planilha publicada como CSV
+Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
+    download: true,
+    header: true,
+    complete: function(results) {
+        dados = results.data;
         atualizarTabela(dados);
-    });
+    }
+});
 
+// Filtro do input
 document.getElementById("busca").addEventListener("keyup", function() {
     const filtro = normalize(this.value);
 
     const filtrado = dados.filter(item =>
-        normalize(item.Setor).includes(filtro) ||
-        normalize(item.Tipo).includes(filtro) ||
-        normalize(item.Descricao).includes(filtro)
+        normalize(item.Setor || "").includes(filtro) ||
+        normalize(item.Tipo || "").includes(filtro) ||
+        normalize(item.Descricao || "").includes(filtro)
     );
 
     atualizarTabela(filtrado);
 });
 
+// Função para atualizar a tabela
 function atualizarTabela(lista) {
     const tbody = document.querySelector("#tabela tbody");
     tbody.innerHTML = "";
@@ -86,13 +95,13 @@ function atualizarTabela(lista) {
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
-            <td>${item.Setor}</td>
-            <td>${item.Tipo}</td>
-            <td>${item.Descricao}</td>
+            <td>${item.Setor || ""}</td>
+            <td>${item.Tipo || ""}</td>
+            <td>${item.Descricao || ""}</td>
         `;
 
         tr.ondblclick = () => {
-            window.open(item.Link, "_blank");
+            if(item.Link) window.open(item.Link, "_blank");
         };
 
         tbody.appendChild(tr);
