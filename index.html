@@ -90,7 +90,7 @@ document.getElementById("busca").addEventListener("keyup", function() {
     const filtrado = dados.filter(item =>
         normalize(item.Setor || "").includes(filtro) ||
         normalize(item.Tipo || "").includes(filtro) ||
-        normalize(item["Descrição"] || "").includes(filtro)
+        normalize(item["Descriçao"] || "").includes(filtro)
     );
 
     atualizarTabela(filtrado);
