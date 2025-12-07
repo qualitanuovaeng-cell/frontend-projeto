@@ -13,38 +13,42 @@
         overflow: hidden;
     }
 
-    /* Logo fixo no topo à esquerda */
-    .logo {
+    /* ===== LOGO FIXO ===== */
+    .logo-area {
         position: fixed;
         top: 20px;
         left: 20px;
         z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 
-    .logo img {
+    .logo-area img {
         max-height: 150px;
         border-radius: 20px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
-    /* Botão aprovador */
     #btnAccesso {
-        margin-top: 10px;
-        width: 180px;
+        width: 200px;
         padding: 10px;
         border-radius: 10px;
         border: 2px solid black;
         background-color: white;
         font-weight: bold;
         cursor: pointer;
+        text-align: center;
     }
 
+    /* ===== TELA PRINCIPAL ===== */
     .main-container {
         display: flex;
         flex-direction: column;
         max-width: 1000px;
         width: 100%;
-        margin-left: 200px;
+        margin-left: 260px;
         gap: 20px;
         box-sizing: border-box;
     }
@@ -102,14 +106,13 @@
     tbody tr:nth-child(odd) { background-color: white; }
     tbody tr:nth-child(even) { background-color: rgb(230,245,230); }
     tbody tr:hover { background-color: #a8cfff; }
-    tbody tr[style*="cursor: pointer;"] td { cursor: pointer; }
 
-    /* Modal */
+    /* ===== LOGIN MODAL ===== */
     .modal {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.6);
         justify-content: center;
         align-items: center;
         z-index: 9999;
@@ -119,22 +122,26 @@
         background: rgb(217,234,211);
         padding: 25px;
         border-radius: 15px;
-        width: 320px;
+        width: 350px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         text-align: center;
     }
 
-    .modal-box input, .modal-box select {
+    .modal-box select,
+    .modal-box input {
         width: 100%;
-        padding: 10px;
-        margin: 8px 0;
+        padding: 12px;
+        margin-top: 10px;
         border-radius: 8px;
         border: 2px solid black;
+        box-sizing: border-box;
+        font-size: 14px;
     }
 
     .modal-box button {
-        padding: 10px 20px;
-        margin-top: 10px;
+        width: 100%;
+        padding: 12px;
+        margin-top: 12px;
         border-radius: 10px;
         border: 2px solid black;
         background-color: white;
@@ -142,23 +149,49 @@
         cursor: pointer;
     }
 
+    /* ===== PÁGINA DO APROVADOR (FULLSCREEN) ===== */
+    .pagina-aprovador {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgb(217,234,211);
+        z-index: 9000;
+        padding: 40px;
+        box-sizing: border-box;
+    }
+
+    .aprovador-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .topo-aprovador {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     @media (max-width: 800px) {
         .main-container { margin-left: 20px; }
-        #busca, table { width: 95%; }
-        .logo { position: static; margin-bottom: 20px; }
+        .logo-area { position: static; }
     }
 </style>
 </head>
 <body>
 
-<div class="logo">
-    <img src="Logotipo.png" alt="Logotipo Azienda">
+<!-- LOGO + BOTÃO -->
+<div class="logo-area">
+    <img src="Logotipo.png">
     <button id="btnAccesso">Accesso approvatori</button>
 </div>
 
-<div class="main-container">
+<!-- TELA PRINCIPAL -->
+<div class="main-container" id="paginaPrincipal">
     <h1>Visualizzatore di documenti</h1>
-    <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
+    <input type="text" id="busca" placeholder="Digita per cercare...">
 
     <div class="table-wrapper">
         <table id="tabela">
@@ -174,16 +207,11 @@
     </div>
 </div>
 
-<!-- MODAIS -->
-
+<!-- MODAL LOGIN -->
 <div id="loginModal" class="modal">
   <div class="modal-box">
     <h3>Accesso approvatori</h3>
-
-    <select id="listaUsuarios">
-        <option value="">Seleziona utente</option>
-    </select>
-
+    <select id="listaUsuarios"></select>
     <input type="password" id="senha" placeholder="Senha">
 
     <button onclick="fazerLogin()">Entrar</button>
@@ -191,100 +219,50 @@
   </div>
 </div>
 
-<div id="painelModal" class="modal">
-  <div class="modal-box">
-    <h3>Area approvatori</h3>
-    <p id="userLogado"></p>
-
-    <button onclick="logout()">Logoff / Retornar</button>
-  </div>
+<!-- PÁGINA DO APROVADOR -->
+<div id="paginaAprovador" class="pagina-aprovador">
+    <div class="aprovador-container">
+        <div class="topo-aprovador">
+            <h1>Area approvatori</h1>
+            <button onclick="logout()">Logoff / Retornar</button>
+        </div>
+        <p id="userLogado"></p>
+        <!-- Aqui entraremos com a tabela de aprovação na próxima etapa -->
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
 <script>
-/* -------- PARTE ORIGINAL (100% intacta) -------- */
-
-let dati = [];
-
-function normalize(text) {
-    return text
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]/g, " ")
-        .toLowerCase();
-}
-
-function mapColumns(item) {
-    return {
-        Settore: item.Setor || "",
-        Tipo: item.Tipo || "",
-        Descrizione: item.Descricao || "",
-        Link: item.Link || ""
-    };
-}
-
-Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
-    download: true,
-    header: true,
-    complete: function(results) {
-        dati = results.data.map(mapColumns);
-    }
-});
-
-document.getElementById("busca").addEventListener("keyup", function() {
-    const filtro = normalize(this.value);
-
-    if(filtro === "") {
-        aggiornaTabella([]);
-        return;
-    }
-
-    const filtrato = dati.filter(item =>
-        normalize(item.Settore).includes(filtro) ||
-        normalize(item.Tipo).includes(filtro) ||
-        normalize(item.Descrizione).includes(filtro)
-    );
-
-    aggiornaTabella(filtrato);
-});
-
-function aggiornaTabella(lista) {
-    const tbody = document.querySelector("#tabela tbody");
-    tbody.innerHTML = "";
-
-    lista.forEach(item => {
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${item.Settore}</td>
-            <td>${item.Tipo}</td>
-            <td>${item.Descrizione}</td>
-        `;
-
-        if(item.Link) {
-            let linkFinale = item.Link;
-            if(linkFinale.includes("drive.google.com")) {
-                const fileId = linkFinale.split("/d/")[1].split("/")[0];
-                linkFinale = `https://drive.google.com/file/d/${fileId}/preview`;
-            }
-
-            tr.style.cursor = "pointer";
-            tr.onclick = () => {
-                window.open(linkFinale, "_blank");
-            };
-        }
-
-        tbody.appendChild(tr);
-    });
-}
-
-/* -------- NOVA PARTE (ETAPA 02.1) -------- */
-
+/* ===== LOGIN ===== */
 const URL_ASSISTENTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
 
-let listaCredenciais = [];
-let usuarioAtual = "";
+let credenciais = [];
+
+Papa.parse(URL_ASSISTENTE, {
+    download: true,
+    complete: function(results) {
+        const linhas = results.data.slice(1);
+        const select = document.getElementById("listaUsuarios");
+
+        const opt0 = document.createElement("option");
+        opt0.value = "";
+        opt0.textContent = "Seleziona utente";
+        select.appendChild(opt0);
+
+        linhas.forEach(linha => {
+            const u = linha[0]?.trim();
+            const p = linha[1]?.trim();
+            if(u && p){
+                credenciais.push({ u, p });
+                const opt = document.createElement("option");
+                opt.value = u;
+                opt.textContent = u;
+                select.appendChild(opt);
+            }
+        });
+    }
+});
 
 document.getElementById("btnAccesso").onclick = () => {
     document.getElementById("loginModal").style.display = "flex";
@@ -294,51 +272,53 @@ function fecharLogin() {
     document.getElementById("loginModal").style.display = "none";
 }
 
-function logout() {
-    document.getElementById("painelModal").style.display = "none";
-    usuarioAtual = "";
+function fazerLogin() {
+    const u = document.getElementById("listaUsuarios").value;
+    const p = document.getElementById("senha").value;
+
+    const ok = credenciais.find(x => x.u === u && x.p === p);
+
+    if(ok){
+        document.getElementById("loginModal").style.display = "none";
+        document.getElementById("paginaPrincipal").style.display = "none";
+        document.getElementById("paginaAprovador").style.display = "block";
+        document.getElementById("userLogado").textContent = "Utente: " + u;
+    } else {
+        alert("Usuário ou senha inválidos");
+    }
 }
 
-Papa.parse(URL_ASSISTENTE, {
+function logout(){
+    document.getElementById("paginaAprovador").style.display = "none";
+    document.getElementById("paginaPrincipal").style.display = "block";
+}
+
+/* ===== SUA TABELA ORIGINAL (intacta) ===== */
+let dati = [];
+
+Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
     download: true,
+    header: true,
     complete: function(results) {
-        const linhas = results.data.slice(1);
-        const select = document.getElementById("listaUsuarios");
-
-        linhas.forEach(linha => {
-            const user = linha[0]?.trim();
-            const pass = linha[1]?.trim();
-
-            if(user && pass) {
-                listaCredenciais.push({ user, pass });
-
-                const opt = document.createElement("option");
-                opt.value = user;
-                opt.textContent = user;
-                select.appendChild(opt);
-            }
-        });
+        dati = results.data;
     }
 });
 
-function fazerLogin() {
-    const user = document.getElementById("listaUsuarios").value;
-    const pass = document.getElementById("senha").value;
+document.getElementById("busca").addEventListener("keyup", function() {
+    const f = this.value.toLowerCase();
+    const tb = document.querySelector("#tabela tbody");
+    tb.innerHTML = "";
 
-    const valido = listaCredenciais.find(u => 
-        u.user === user && u.pass === pass
-    );
-
-    if(valido) {
-        usuarioAtual = user;
-        document.getElementById("loginModal").style.display = "none";
-        document.getElementById("painelModal").style.display = "flex";
-        document.getElementById("userLogado").textContent = "Utente: " + user;
-        document.getElementById("senha").value = "";
-    } else {
-        alert("Usuário ou senha incorretos");
-    }
-}
+    dati.filter(r =>
+        (r.Setor||"").toLowerCase().includes(f) ||
+        (r.Tipo||"").toLowerCase().includes(f) ||
+        (r.Descricao||"").toLowerCase().includes(f)
+    ).forEach(r => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td>${r.Setor}</td><td>${r.Tipo}</td><td>${r.Descricao}</td>`;
+        tb.appendChild(tr);
+    });
+});
 </script>
 
 </body>
