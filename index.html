@@ -319,7 +319,9 @@ function fazerLogin(){
         document.getElementById("paginaAprovador").style.display = "block";
         document.getElementById("userLogado").textContent = "Utente: " + u;
 
-        // **Chamada da função do código 02**
+        // === ALTERAÇÕES PARA TABELA 02 ===
+        document.getElementById("btnAccesso").style.display = "none";
+        document.getElementById("btnRetornar").style.display = "block";
         carregarTabelaAprovador(u);
     } else {
         alert("Credenziali errate");
