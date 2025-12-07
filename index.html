@@ -31,8 +31,8 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-#btnAccesso {
-    width: 150px;  /* mesmo tamanho do logo */
+#btnAccesso, #btnRetornar {
+    width: 150px;
     padding: 10px 0;
     border-radius: 10px;
     border: 2px solid black;
@@ -166,7 +166,7 @@ tbody tr:hover { background-color: #a8cfff; }
 }
 
 .pagina-aprovador .aprovador-container {
-    margin-top: 170px; /* abaixo do logo */
+    margin-top: 20px; /* subir para o topo abaixo do logo */
     max-width: 1000px;
     margin-left: 260px;
     display: flex;
@@ -175,16 +175,7 @@ tbody tr:hover { background-color: #a8cfff; }
 }
 
 .pagina-aprovador .logo-area button {
-    display: none; /* ocultar botão de acesso */
-}
-
-#btnRetornar {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 2px solid black;
-    background-color: white;
-    font-weight: bold;
-    cursor: pointer;
+    display: none; /* esconder botão de acesso */
 }
 
 @media (max-width: 800px) {
@@ -208,7 +199,7 @@ tbody tr:hover { background-color: #a8cfff; }
     <h1>Visualizzatore di documenti</h1>
 
     <div class="search-wrapper">
-        <input type="text" id="busca" placeholder="Digitare per cercare..." autocomplete="off">
+        <input type="text" id="busca" placeholder="Utente da cercare..." autocomplete="off">
     </div>
 
     <div class="table-wrapper">
@@ -229,7 +220,9 @@ tbody tr:hover { background-color: #a8cfff; }
 <div id="loginModal" class="modal">
   <div class="modal-box">
     <h3>Accesso approvatori</h3>
-    <select id="listaUsuarios"></select>
+    <select id="listaUsuarios">
+        <option value="">Utente</option>
+    </select>
     <input type="password" id="senha" placeholder="Password">
     <div class="button-group">
         <button onclick="fazerLogin()">Entrare</button>
@@ -242,14 +235,13 @@ tbody tr:hover { background-color: #a8cfff; }
 <div id="paginaAprovador" class="pagina-aprovador">
     <div class="logo-area">
         <img src="Logotipo.png">
+        <!-- Botão de acesso oculto, botão retornar aparece -->
+        <button id="btnRetornar" onclick="logout()">Ritornare</button>
     </div>
 
     <div class="aprovador-container">
-        <div style="display:flex; flex-direction:column; gap:5px;">
-            <h1>Area approvatori</h1>
-            <p id="userLogado"></p>
-            <button id="btnRetornar" onclick="logout()">Ritornare</button>
-        </div>
+        <h1>Area approvatori</h1>
+        <p id="userLogado"></p>
     </div>
 </div>
 
