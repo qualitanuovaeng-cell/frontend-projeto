@@ -314,18 +314,16 @@ function fazerLogin(){
     const ok=credenciais.find(x=>x.u===u&&x.p===p);
 
     if(ok){
-        document.getElementById("loginModal").style.display="none";
-        document.getElementById("paginaPrincipal").style.display="none";
-        document.getElementById("paginaAprovador").style.display="block";
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("paginaPrincipal").style.display="none";
+    document.getElementById("paginaAprovador").style.display="block";
+    document.getElementById("userLogado").textContent="Utente: "+u;
 
-        document.getElementById("btnAccesso").style.display="none";
-        document.getElementById("btnRetornar").style.display="block";
+    // Chama a função do código 02 passando o usuário logado
+    carregarTabelaAprovador(u);
+	  }
 
-        document.getElementById("userLogado").textContent="Utente: "+u;
-    } else {
-        alert("Credenziali errate");
-    }
-}
+	}
 
 function logout(){
     location.reload();
@@ -335,3 +333,80 @@ function logout(){
 
 </body>
 </html>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+<script>
+function carregarTabelaAprovador(usuarioLogado) {
+    const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=957497978&single=true&output=csv";
+    
+    // Seleciona a div/aprovador container para inserir a tabela
+    const container = document.querySelector(".aprovador-container");
+
+    // Remove tabela antiga se existir
+    const tabelaExistente = document.getElementById("tabelaAprovador");
+    if(tabelaExistente) tabelaExistente.remove();
+
+    // Cria wrapper da tabela
+    const tableWrapper = document.createElement("div");
+    tableWrapper.className = "table-wrapper";
+
+    const tabela = document.createElement("table");
+    tabela.id = "tabelaAprovador";
+
+    // Cabeçalho
+    tabela.innerHTML = `
+        <thead>
+            <tr>
+                <th>Setor</th>
+                <th>Tipo</th>
+                <th>Descrizione</th>
+                <th>Nova Revisao</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    tableWrapper.appendChild(tabela);
+    container.appendChild(tableWrapper);
+
+    // Carrega CSV
+    Papa.parse(urlPlanilha, {
+        download: true,
+        header: true,
+        complete: function(results) {
+            const dados = results.data;
+
+            // Filtra somente registros do aprovador logado
+            const filtrados = dados.filter(item => item.Step_atual?.trim() === usuarioLogado);
+
+            const tbody = tabela.querySelector("tbody");
+            tbody.innerHTML = "";
+
+            filtrados.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${item.Setor || ""}</td>
+                    <td>${item.Tipo || ""}</td>
+                    <td>${item.Descricao || ""}</td>
+                    <td>${item.Nova_Revisao || ""}</td>
+                `;
+
+                // Clique para abrir link
+                if(item.Link){
+                    let link = item.Link;
+                    if(link.includes("drive.google.com")){
+                        const id = link.split("/d/")[1].split("/")[0];
+                        link = `https://drive.google.com/file/d/${id}/preview`;
+                    }
+                    tr.style.cursor = "pointer";
+                    tr.onclick = () => window.open(link, "_blank");
+                }
+
+                tbody.appendChild(tr);
+            });
+        }
+    });
+}
+</script>
