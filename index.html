@@ -32,15 +32,16 @@
     }
 
     #btnAccesso {
-        width: 200px;
-        padding: 10px;
-        border-radius: 10px;
-        border: 2px solid black;
-        background-color: white;
-        font-weight: bold;
-        cursor: pointer;
-        text-align: center;
-    }
+    width: 150px;            /* mesma largura visual do logo */
+    padding: 10px 0;
+    border-radius: 10px;
+    border: 2px solid black;
+    background-color: white;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+}
+
 
     /* ===== TELA PRINCIPAL ===== */
     .main-container {
@@ -119,7 +120,7 @@
     }
 
     .modal-box {
-        background: rgb(217,234,211);
+        background: #e0e0e0;
         padding: 25px;
         border-radius: 15px;
         width: 350px;
@@ -221,6 +222,17 @@
 
 <!-- PÁGINA DO APROVADOR -->
 <div id="paginaAprovador" class="pagina-aprovador">
+
+    <!-- Logotipo na tela do aprovador -->
+    <div class="logo-area">
+        <img src="Logotipo.png">
+    </div>
+
+	/* Não mostrar o botão na tela do aprovador */
+#paginaAprovador .logo-area button {
+    display: none;
+}
+
     <div class="aprovador-container">
         <div class="topo-aprovador">
             <h1>Area approvatori</h1>
@@ -265,6 +277,8 @@ Papa.parse(URL_ASSISTENTE, {
 });
 
 document.getElementById("btnAccesso").onclick = () => {
+    document.getElementById("listaUsuarios").value = "";
+    document.getElementById("senha").value = "";
     document.getElementById("loginModal").style.display = "flex";
 };
 
@@ -289,9 +303,14 @@ function fazerLogin() {
 }
 
 function logout(){
+    // fecha tela do aprovador
     document.getElementById("paginaAprovador").style.display = "none";
     document.getElementById("paginaPrincipal").style.display = "block";
+    
+    // força atualização da página (como F5)
+    location.reload();
 }
+
 
 /* ===== SUA TABELA ORIGINAL (intacta) ===== */
 let dati = [];
