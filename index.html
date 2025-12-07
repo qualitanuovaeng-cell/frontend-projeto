@@ -47,7 +47,7 @@ body {
     flex-direction: column;
     max-width: 1000px;
     width: 100%;
-    margin-left: 260px; /* espaço para logo fixo */
+    margin-left: 260px;
     gap: 10px;
 }
 
@@ -166,12 +166,12 @@ tbody tr:hover { background-color: #a8cfff; }
 }
 
 .pagina-aprovador .aprovador-container {
-    margin-top: 20px; /* subir para o topo abaixo do logo */
+    margin-top: 20px; /* subir texto para topo logo abaixo do logo */
     max-width: 1000px;
     margin-left: 260px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 
 .pagina-aprovador .logo-area button {
@@ -199,7 +199,7 @@ tbody tr:hover { background-color: #a8cfff; }
     <h1>Visualizzatore di documenti</h1>
 
     <div class="search-wrapper">
-        <input type="text" id="busca" placeholder="Utente da cercare..." autocomplete="off">
+        <input type="text" id="busca" placeholder="Digitare per cercare..." autocomplete="off">
     </div>
 
     <div class="table-wrapper">
@@ -221,7 +221,7 @@ tbody tr:hover { background-color: #a8cfff; }
   <div class="modal-box">
     <h3>Accesso approvatori</h3>
     <select id="listaUsuarios">
-        <option value="">Utente</option>
+        <!-- Nenhuma option “Utente” aqui, placeholder usado -->
     </select>
     <input type="password" id="senha" placeholder="Password">
     <div class="button-group">
@@ -235,7 +235,7 @@ tbody tr:hover { background-color: #a8cfff; }
 <div id="paginaAprovador" class="pagina-aprovador">
     <div class="logo-area">
         <img src="Logotipo.png">
-        <!-- Botão de acesso oculto, botão retornar aparece -->
+        <!-- Botão retornar aparece -->
         <button id="btnRetornar" onclick="logout()">Ritornare</button>
     </div>
 
@@ -322,7 +322,7 @@ Papa.parse(URL_ASSISTENTE,{
 });
 
 document.getElementById("btnAccesso").onclick=()=>{
-    document.getElementById("listaUsuarios").value="";
+    document.getElementById("listaUsuarios").selectedIndex = -1; // Limpa seleção
     document.getElementById("senha").value="";
     document.getElementById("loginModal").style.display="flex";
 }
