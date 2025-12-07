@@ -14,7 +14,7 @@ body {
     overflow: hidden;
 }
 
-/* LOGO */
+/* LOGO FIXO */
 .logo-area {
     position: fixed;
     top: 20px;
@@ -32,7 +32,7 @@ body {
 }
 
 #btnAccesso {
-    width: 150px;
+    width: 150px;  /* mesmo tamanho do logo */
     padding: 10px 0;
     border-radius: 10px;
     border: 2px solid black;
@@ -41,24 +41,24 @@ body {
     cursor: pointer;
 }
 
-/* PALCO PRINCIPAL */
+/* TELA PRINCIPAL */
 .main-container {
     display: flex;
     flex-direction: column;
     max-width: 1000px;
     width: 100%;
-    margin-left: 260px;
+    margin-left: 260px; /* espaço para logo fixo */
     gap: 10px;
 }
 
 h1 { margin: 0; font-size: 28px; }
 
-/* BUSCA */
+/* CAMPO DE BUSCA */
 .search-wrapper {
     border: 2px solid black;
     border-radius: 10px;
-    padding: 2px;
     background-color: white;
+    padding: 2px;
 }
 
 #busca {
@@ -93,8 +93,10 @@ th {
     background-color: #e0e0e0;
     position: sticky;
     top: 0;
+    z-index: 10;
 }
 
+/* LARGURA DAS COLUNAS */
 #tabela th:nth-child(1),
 #tabela td:nth-child(1) { width: 20%; }
 #tabela th:nth-child(2),
@@ -106,7 +108,7 @@ tbody tr:nth-child(odd) { background-color: white; }
 tbody tr:nth-child(even) { background-color: rgb(230,245,230); }
 tbody tr:hover { background-color: #a8cfff; }
 
-/* LOGIN */
+/* MODAL LOGIN */
 .modal {
     display: none;
     position: fixed;
@@ -119,22 +121,42 @@ tbody tr:hover { background-color: #a8cfff; }
 
 .modal-box {
     background: #e0e0e0;
-    padding: 25px;
+    padding: 30px;
     border-radius: 15px;
-    width: 350px;
+    width: 380px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .modal-box select,
 .modal-box input {
     width: 100%;
-    padding: 14px;
-    margin-top: 15px;
+    padding: 12px;
+    font-size: 14px;
     border-radius: 8px;
     border: 2px solid black;
+    box-sizing: border-box;
 }
 
-/* TELA APROVADOR */
+.modal-box .button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.modal-box .button-group button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid black;
+    background-color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* PAGINA DO APROVADOR */
 .pagina-aprovador {
     display: none;
     position: fixed;
@@ -144,12 +166,16 @@ tbody tr:hover { background-color: #a8cfff; }
 }
 
 .pagina-aprovador .aprovador-container {
-    margin-top: 200px;
+    margin-top: 170px; /* abaixo do logo */
     max-width: 1000px;
     margin-left: 260px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+.pagina-aprovador .logo-area button {
+    display: none; /* ocultar botão de acesso */
 }
 
 #btnRetornar {
@@ -160,25 +186,29 @@ tbody tr:hover { background-color: #a8cfff; }
     font-weight: bold;
     cursor: pointer;
 }
+
+@media (max-width: 800px) {
+    .main-container { margin-left: 20px; }
+    .pagina-aprovador .aprovador-container { margin-left: 20px; }
+    .logo-area { position: static; margin-bottom: 10px; }
+}
 </style>
 </head>
 
 <body>
 
+<!-- LOGO + BOTÃO -->
 <div class="logo-area">
     <img src="Logotipo.png">
     <button id="btnAccesso">Accesso approvatori</button>
 </div>
 
+<!-- TELA PRINCIPAL -->
 <div class="main-container" id="paginaPrincipal">
     <h1>Visualizzatore di documenti</h1>
 
     <div class="search-wrapper">
-        <input
-            type="text"
-            id="busca"
-            placeholder="Digitare per cercare..."
-            autocomplete="off">
+        <input type="text" id="busca" placeholder="Digitare per cercare..." autocomplete="off">
     </div>
 
     <div class="table-wrapper">
@@ -195,14 +225,16 @@ tbody tr:hover { background-color: #a8cfff; }
     </div>
 </div>
 
-<!-- LOGIN -->
+<!-- MODAL LOGIN -->
 <div id="loginModal" class="modal">
   <div class="modal-box">
     <h3>Accesso approvatori</h3>
     <select id="listaUsuarios"></select>
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="fazerLogin()">Entrar</button>
-    <button onclick="fecharLogin()">Cancelar</button>
+    <input type="password" id="senha" placeholder="Password">
+    <div class="button-group">
+        <button onclick="fazerLogin()">Entrare</button>
+        <button onclick="fecharLogin()">Annullare</button>
+    </div>
   </div>
 </div>
 
@@ -213,12 +245,10 @@ tbody tr:hover { background-color: #a8cfff; }
     </div>
 
     <div class="aprovador-container">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <h1>Area approvatori</h1>
-                <p id="userLogado"></p>
-            </div>
-            <button id="btnRetornar" onclick="logout()">Retornar</button>
+        <div style="display:flex; flex-direction:column; gap:5px;">
+            <h1>Area approvatori</h1>
+            <p id="userLogado"></p>
+            <button id="btnRetornar" onclick="logout()">Ritornare</button>
         </div>
     </div>
 </div>
@@ -226,8 +256,7 @@ tbody tr:hover { background-color: #a8cfff; }
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
 <script>
-/* PARTE ORIGINAL */
-
+/* TABELA PRINCIPAL */
 let dati = [];
 
 function normalize(text) {
@@ -282,9 +311,7 @@ function updateTable(lista){
 }
 
 /* LOGIN */
-
 const URL_ASSISTENTE="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
-
 let credenciais=[];
 
 Papa.parse(URL_ASSISTENTE,{
@@ -295,7 +322,7 @@ Papa.parse(URL_ASSISTENTE,{
             if(l[0]&&l[1]){
                 credenciais.push({u:l[0].trim(),p:l[1].trim()});
                 const o=document.createElement("option");
-                o.value=l[0];o.textContent=l[0];
+                o.value=l[0]; o.textContent=l[0];
                 sel.appendChild(o);
             }
         });
