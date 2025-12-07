@@ -14,7 +14,7 @@ body {
     overflow: hidden;
 }
 
-/* LOGO */
+/* ===== LOGO PRINCIPAL ===== */
 .logo-area {
     position: fixed;
     top: 20px;
@@ -31,7 +31,7 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-#btnAccesso {
+#btnAccesso, #btnRetornar {
     width: 150px;
     padding: 10px 0;
     border-radius: 10px;
@@ -41,11 +41,12 @@ body {
     cursor: pointer;
 }
 
-#paginaAprovador #btnAccesso {
+/* ===== OCULTAR LOGO PRINCIPAL NA PAGINA 2 ===== */
+#paginaAprovador #logoPrincipal {
     display: none !important;
 }
 
-/* PALCO PRINCIPAL */
+/* ===== TELA PRINCIPAL ===== */
 .main-container {
     display: flex;
     flex-direction: column;
@@ -99,12 +100,9 @@ th {
     top: 0;
 }
 
-#tabela th:nth-child(1),
-#tabela td:nth-child(1) { width: 20%; }
-#tabela th:nth-child(2),
-#tabela td:nth-child(2) { width: 20%; }
-#tabela th:nth-child(3),
-#tabela td:nth-child(3) { width: 60%; }
+#tabela th:nth-child(1), #tabela td:nth-child(1) { width: 20%; }
+#tabela th:nth-child(2), #tabela td:nth-child(2) { width: 20%; }
+#tabela th:nth-child(3), #tabela td:nth-child(3) { width: 60%; }
 
 tbody tr:nth-child(odd) { background-color: white; }
 tbody tr:nth-child(even) { background-color: rgb(230,245,230); }
@@ -129,8 +127,7 @@ tbody tr:hover { background-color: #a8cfff; }
     text-align: center;
 }
 
-.modal-box select,
-.modal-box input {
+.modal-box select, .modal-box input {
     width: 100%;
     padding: 14px;
     margin-top: 10px;
@@ -155,7 +152,7 @@ tbody tr:hover { background-color: #a8cfff; }
     cursor: pointer;
 }
 
-/* TELA APROVADOR */
+/* ===== PAGINA APROVADOR ===== */
 .pagina-aprovador {
     display: none;
     position: fixed;
@@ -164,30 +161,31 @@ tbody tr:hover { background-color: #a8cfff; }
     padding: 40px;
 }
 
-.pagina-aprovador .aprovador-container {
-    margin-top: 0px; /* texto mais para cima */
-    max-width: 1000px;
-    margin-left: 260px;
+.logo-area-aprovador {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1500;
     display: flex;
     flex-direction: column;
-    gap: 80px;
+    gap: 10px;
 }
 
-#btnRetornar {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 2px solid black;
-    background-color: white;
-    font-weight: bold;
-    cursor: pointer;
+.aprovador-container {
+    max-width: 1000px;
+    margin-left: 260px;
+    margin-top: 30px; /* MAIS PARA CIMA */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGO + BOTÃO -->
-<div class="logo-area">
+<!-- LOGO PRINCIPAL -->
+<div class="logo-area" id="logoPrincipal">
     <img src="Logotipo.png">
     <button id="btnAccesso">Accesso approvatori</button>
 </div>
@@ -231,34 +229,26 @@ tbody tr:hover { background-color: #a8cfff; }
 
 <!-- PAGINA APROVADOR -->
 <div id="paginaAprovador" class="pagina-aprovador">
-    <div class="logo-area">
-    <img src="Logotipo.png">
-    <button id="btnRetornar" onclick="logout()">Ritornare</button>
-</div>
 
+    <!-- LOGO DA PAGINA 2 -->
+    <div class="logo-area-aprovador">
+        <img src="Logotipo.png">
+        <button id="btnRetornar" onclick="logout()">Ritornare</button>
+    </div>
 
     <div class="aprovador-container">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <h1>Area approvatori</h1>
-                <p id="userLogado"></p>
-            </div>
-        </div>
+        <h1>Area approvatori</h1>
+        <p id="userLogado"></p>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
-
 <script>
-/* === FUNÇÕES DE TABELA === */
 let dati = [];
 
 function normalize(text) {
-    return text.normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]/g, " ")
-        .toLowerCase();
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, " ").toLowerCase();
 }
 
 function mapColumns(item) {
@@ -305,15 +295,15 @@ function updateTable(lista){
     });
 }
 
-/* === LOGIN === */
+/* LOGIN */
 const URL_ASSISTENTE="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
 
 let credenciais=[];
+
 Papa.parse(URL_ASSISTENTE,{
     download:true,
     complete:r=>{
         const sel=document.getElementById("listaUsuarios");
-        sel.innerHTML = '<option value="" disabled selected>Utente</option>'; // placeholder
         r.data.slice(1).forEach(l=>{
             if(l[0] && l[1]){
                 credenciais.push({u:l[0].trim(),p:l[1].trim()});
@@ -332,8 +322,8 @@ document.getElementById("btnAccesso").onclick=()=>{
     document.getElementById("loginModal").style.display="flex";
 }
 
-function fecharLogin(){
-    document.getElementById("loginModal").style.display="none";
+function fecharLogin(){ 
+    document.getElementById("loginModal").style.display="none"; 
 }
 
 function fazerLogin(){
