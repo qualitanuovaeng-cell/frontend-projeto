@@ -14,7 +14,7 @@ body {
     overflow: hidden;
 }
 
-/* ===== LOGO PRINCIPAL ===== */
+/* LOGO ÚNICO */
 .logo-area {
     position: fixed;
     top: 20px;
@@ -41,12 +41,7 @@ body {
     cursor: pointer;
 }
 
-/* ===== OCULTAR LOGO PRINCIPAL NA PAGINA 2 ===== */
-#paginaAprovador #logoPrincipal {
-    display: none !important;
-}
-
-/* ===== TELA PRINCIPAL ===== */
+/* TELA PRINCIPAL */
 .main-container {
     display: flex;
     flex-direction: column;
@@ -127,7 +122,8 @@ tbody tr:hover { background-color: #a8cfff; }
     text-align: center;
 }
 
-.modal-box select, .modal-box input {
+.modal-box select,
+.modal-box input {
     width: 100%;
     padding: 14px;
     margin-top: 10px;
@@ -152,7 +148,7 @@ tbody tr:hover { background-color: #a8cfff; }
     cursor: pointer;
 }
 
-/* ===== PAGINA APROVADOR ===== */
+/* PAGINA APROVADOR */
 .pagina-aprovador {
     display: none;
     position: fixed;
@@ -161,33 +157,24 @@ tbody tr:hover { background-color: #a8cfff; }
     padding: 40px;
 }
 
-.logo-area-aprovador {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1500;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .aprovador-container {
     max-width: 1000px;
     margin-left: 260px;
-    margin-top: 30px; /* MAIS PARA CIMA */
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGO PRINCIPAL -->
-<div class="logo-area" id="logoPrincipal">
+<!-- LOGO ÚNICO -->
+<div class="logo-area">
     <img src="Logotipo.png">
     <button id="btnAccesso">Accesso approvatori</button>
+    <button id="btnRetornar" onclick="logout()" style="display:none;">Ritornare</button>
 </div>
 
 <!-- TELA PRINCIPAL -->
@@ -212,7 +199,7 @@ tbody tr:hover { background-color: #a8cfff; }
     </div>
 </div>
 
-<!-- MODAL LOGIN -->
+<!-- LOGIN -->
 <div id="loginModal" class="modal">
   <div class="modal-box">
     <h3>Accesso approvatori</h3>
@@ -229,13 +216,6 @@ tbody tr:hover { background-color: #a8cfff; }
 
 <!-- PAGINA APROVADOR -->
 <div id="paginaAprovador" class="pagina-aprovador">
-
-    <!-- LOGO DA PAGINA 2 -->
-    <div class="logo-area-aprovador">
-        <img src="Logotipo.png">
-        <button id="btnRetornar" onclick="logout()">Ritornare</button>
-    </div>
-
     <div class="aprovador-container">
         <h1>Area approvatori</h1>
         <p id="userLogado"></p>
@@ -248,7 +228,10 @@ tbody tr:hover { background-color: #a8cfff; }
 let dati = [];
 
 function normalize(text) {
-    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, " ").toLowerCase();
+    return text.normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]/g, " ")
+        .toLowerCase();
 }
 
 function mapColumns(item) {
@@ -299,7 +282,6 @@ function updateTable(lista){
 const URL_ASSISTENTE="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
 
 let credenciais=[];
-
 Papa.parse(URL_ASSISTENTE,{
     download:true,
     complete:r=>{
@@ -308,8 +290,8 @@ Papa.parse(URL_ASSISTENTE,{
             if(l[0] && l[1]){
                 credenciais.push({u:l[0].trim(),p:l[1].trim()});
                 const o=document.createElement("option");
-                o.value=l[0].trim();
-                o.textContent=l[0].trim();
+                o.value=l[0];
+                o.textContent=l[0];
                 sel.appendChild(o);
             }
         });
@@ -322,24 +304,35 @@ document.getElementById("btnAccesso").onclick=()=>{
     document.getElementById("loginModal").style.display="flex";
 }
 
-function fecharLogin(){ 
-    document.getElementById("loginModal").style.display="none"; 
+function fecharLogin(){
+    document.getElementById("loginModal").style.display="none";
 }
 
 function fazerLogin(){
     const u=document.getElementById("listaUsuarios").value;
     const p=document.getElementById("senha").value;
     const ok=credenciais.find(x=>x.u===u&&x.p===p);
+
     if(ok){
         document.getElementById("loginModal").style.display="none";
         document.getElementById("paginaPrincipal").style.display="none";
         document.getElementById("paginaAprovador").style.display="block";
+
+        document.getElementById("btnAccesso").style.display="none";
+        document.getElementById("btnRetornar").style.display="block";
+
         document.getElementById("userLogado").textContent="Utente: "+u;
-    }else alert("Credenziali errate");
+    } else {
+        alert("Credenziali errate");
+    }
 }
 
 function logout(){
-    location.reload();
+    document.getElementById("paginaAprovador").style.display="none";
+    document.getElementById("paginaPrincipal").style.display="block";
+
+    document.getElementById("btnAccesso").style.display="block";
+    document.getElementById("btnRetornar").style.display="none";
 }
 </script>
 
