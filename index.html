@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -42,27 +41,37 @@ body {
     cursor: pointer;
 }
 
-/* PAGINA PRINCIPAL */
+/* PALCO PRINCIPAL */
 .main-container {
     display: flex;
     flex-direction: column;
     max-width: 1000px;
     width: 100%;
     margin-left: 260px;
-    gap: 20px;
+    gap: 10px;
 }
 
 h1 { margin: 0; font-size: 28px; }
 
-#busca {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 8px;
+/* BUSCA */
+.search-wrapper {
     border: 2px solid black;
-    width: 100%;
+    border-radius: 10px;
+    padding: 2px;
     background-color: white;
 }
 
+#busca {
+    padding: 10px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background-color: white;
+}
+
+/* TABELA */
 .table-wrapper {
     max-height: 500px;
     overflow-y: auto;
@@ -134,8 +143,26 @@ tbody tr:hover { background-color: #a8cfff; }
     padding: 40px;
 }
 
-#paginaAprovador .logo-area button {
+.pagina-aprovador .aprovador-container {
+    margin-top: 200px;
+    max-width: 1000px;
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#paginaAprovador #btnAccesso {
     display: none;
+}
+
+#btnRetornar {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid black;
+    background-color: white;
+    font-weight: bold;
+    cursor: pointer;
 }
 </style>
 </head>
@@ -149,7 +176,14 @@ tbody tr:hover { background-color: #a8cfff; }
 
 <div class="main-container" id="paginaPrincipal">
     <h1>Visualizzatore di documenti</h1>
-    <input type="text" id="busca" placeholder="">
+
+    <div class="search-wrapper">
+        <input
+            type="text"
+            id="busca"
+            placeholder="Digitare per cercare..."
+            autocomplete="off">
+    </div>
 
     <div class="table-wrapper">
         <table id="tabela">
@@ -176,21 +210,27 @@ tbody tr:hover { background-color: #a8cfff; }
   </div>
 </div>
 
-<!-- APROVADOR -->
+<!-- PAGINA APROVADOR -->
 <div id="paginaAprovador" class="pagina-aprovador">
     <div class="logo-area">
         <img src="Logotipo.png">
     </div>
 
-    <h1>Area approvatori</h1>
-    <p id="userLogado"></p>
-    <button onclick="logout()">Logoff / Retornar</button>
+    <div class="aprovador-container">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h1>Area approvatori</h1>
+                <p id="userLogado"></p>
+            </div>
+            <button id="btnRetornar" onclick="logout()">Retornar</button>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
 <script>
-/* ===== PARTE ORIGINAL (RESTORED) ===== */
+/* PARTE ORIGINAL */
 
 let dati = [];
 
@@ -213,98 +253,83 @@ function mapColumns(item) {
 Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
     download: true,
     header: true,
-    complete: function(results) {
-        dati = results.data.map(mapColumns);
-    }
+    complete: r => dati = r.data.map(mapColumns)
 });
 
-document.getElementById("busca").addEventListener("keyup", function() {
+document.getElementById("busca").addEventListener("keyup", function () {
     const filtro = normalize(this.value);
-
-    if (!filtro) {
-        aggiornaTabella([]);
-        return;
-    }
-
-    const filtrato = dati.filter(item =>
-        normalize(item.Settore).includes(filtro) ||
-        normalize(item.Tipo).includes(filtro) ||
-        normalize(item.Descrizione).includes(filtro)
-    );
-
-    aggiornaTabella(filtrato);
+    if (!filtro) return updateTable([]);
+    updateTable(dati.filter(i =>
+        normalize(i.Settore).includes(filtro) ||
+        normalize(i.Tipo).includes(filtro) ||
+        normalize(i.Descrizione).includes(filtro)
+    ));
 });
 
-function aggiornaTabella(lista) {
-    const tbody = document.querySelector("#tabela tbody");
-    tbody.innerHTML = "";
-
-    lista.forEach(item => {
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${item.Settore}</td>
-            <td>${item.Tipo}</td>
-            <td>${item.Descrizione}</td>
-        `;
-
-        if (item.Link) {
-            let linkFinale = item.Link;
-            if (linkFinale.includes("drive.google.com")) {
-                const fileId = linkFinale.split("/d/")[1].split("/")[0];
-                linkFinale = `https://drive.google.com/file/d/${fileId}/preview`;
+function updateTable(lista){
+    const tb=document.querySelector("#tabela tbody");
+    tb.innerHTML="";
+    lista.forEach(item=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML=`<td>${item.Settore}</td><td>${item.Tipo}</td><td>${item.Descrizione}</td>`;
+        if(item.Link){
+            let link=item.Link;
+            if(link.includes("drive.google.com")){
+                const id=link.split("/d/")[1].split("/")[0];
+                link=`https://drive.google.com/file/d/${id}/preview`;
             }
-
-            tr.style.cursor = "pointer";
-            tr.onclick = () => window.open(linkFinale, "_blank");
+            tr.style.cursor="pointer";
+            tr.onclick=()=>window.open(link,"_blank");
         }
-
-        tbody.appendChild(tr);
+        tb.appendChild(tr);
     });
 }
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 
-const URL_ASSISTENTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
-let credenciais = [];
+const URL_ASSISTENTE="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
 
-Papa.parse(URL_ASSISTENTE, {
-    download: true,
-    complete: function(results) {
-        const select = document.getElementById("listaUsuarios");
-        const linhas = results.data.slice(1);
+let credenciais=[];
 
-        linhas.forEach(l => {
-            if(l[0] && l[1]){
-                credenciais.push({u:l[0].trim(), p:l[1].trim()});
-                const opt=document.createElement("option");
-                opt.value=l[0]; opt.textContent=l[0];
-                select.appendChild(opt);
+Papa.parse(URL_ASSISTENTE,{
+    download:true,
+    complete:r=>{
+        const sel=document.getElementById("listaUsuarios");
+        r.data.slice(1).forEach(l=>{
+            if(l[0]&&l[1]){
+                credenciais.push({u:l[0].trim(),p:l[1].trim()});
+                const o=document.createElement("option");
+                o.value=l[0];o.textContent=l[0];
+                sel.appendChild(o);
             }
         });
     }
 });
 
-document.getElementById("btnAccesso").onclick = () => {
-    document.getElementById("listaUsuarios").value = "";
-    document.getElementById("senha").value = "";
-    document.getElementById("loginModal").style.display = "flex";
-};
+document.getElementById("btnAccesso").onclick=()=>{
+    document.getElementById("listaUsuarios").value="";
+    document.getElementById("senha").value="";
+    document.getElementById("loginModal").style.display="flex";
+}
 
-function fecharLogin(){document.getElementById("loginModal").style.display="none";}
-function logout(){ location.reload(); }
+function fecharLogin(){
+    document.getElementById("loginModal").style.display="none";
+}
 
 function fazerLogin(){
     const u=document.getElementById("listaUsuarios").value;
     const p=document.getElementById("senha").value;
-
     const ok=credenciais.find(x=>x.u===u&&x.p===p);
     if(ok){
         document.getElementById("loginModal").style.display="none";
         document.getElementById("paginaPrincipal").style.display="none";
         document.getElementById("paginaAprovador").style.display="block";
         document.getElementById("userLogado").textContent="Utente: "+u;
-    } else alert("Credenziali errate");
+    }else alert("Credenziali errate");
+}
+
+function logout(){
+    location.reload();
 }
 </script>
 
