@@ -27,20 +27,26 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
+    /* Botão aprovador */
+    #btnAccesso {
+        margin-top: 10px;
+        width: 180px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid black;
+        background-color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
     .main-container {
         display: flex;
         flex-direction: column;
         max-width: 1000px;
         width: 100%;
-        margin-left: 200px; /* espaço para o logo fixo */
+        margin-left: 200px;
         gap: 20px;
         box-sizing: border-box;
-    }
-
-    .tabella-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
     }
 
     h1 {
@@ -55,11 +61,11 @@
         border: 2px solid black;
         width: 100%;
         box-sizing: border-box;
+        background-color: white;
     }
 
-    /* Container com scroll próprio */
     .table-wrapper {
-        max-height: 500px; /* ajuste a altura que quiser */
+        max-height: 500px;
         overflow-y: auto;
         border: 2px solid black;
         border-radius: 10px;
@@ -86,7 +92,6 @@
         z-index: 10;
     }
 
-    /* Largura das colunas */
     #tabela th:nth-child(1),
     #tabela td:nth-child(1) { width: 20%; }
     #tabela th:nth-child(2),
@@ -99,6 +104,44 @@
     tbody tr:hover { background-color: #a8cfff; }
     tbody tr[style*="cursor: pointer;"] td { cursor: pointer; }
 
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .modal-box {
+        background: rgb(217,234,211);
+        padding: 25px;
+        border-radius: 15px;
+        width: 320px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        text-align: center;
+    }
+
+    .modal-box input, .modal-box select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: 2px solid black;
+    }
+
+    .modal-box button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: 2px solid black;
+        background-color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
     @media (max-width: 800px) {
         .main-container { margin-left: 20px; }
         #busca, table { width: 95%; }
@@ -110,13 +153,13 @@
 
 <div class="logo">
     <img src="Logotipo.png" alt="Logotipo Azienda">
+    <button id="btnAccesso">Accesso approvatori</button>
 </div>
 
 <div class="main-container">
     <h1>Visualizzatore di documenti</h1>
     <input type="text" id="busca" placeholder="Digita per cercare (settore, tipo, descrizione)...">
 
-    <!-- container com scroll próprio -->
     <div class="table-wrapper">
         <table id="tabela">
             <thead>
@@ -131,8 +174,37 @@
     </div>
 </div>
 
+<!-- MODAIS -->
+
+<div id="loginModal" class="modal">
+  <div class="modal-box">
+    <h3>Accesso approvatori</h3>
+
+    <select id="listaUsuarios">
+        <option value="">Seleziona utente</option>
+    </select>
+
+    <input type="password" id="senha" placeholder="Senha">
+
+    <button onclick="fazerLogin()">Entrar</button>
+    <button onclick="fecharLogin()">Cancelar</button>
+  </div>
+</div>
+
+<div id="painelModal" class="modal">
+  <div class="modal-box">
+    <h3>Area approvatori</h3>
+    <p id="userLogado"></p>
+
+    <button onclick="logout()">Logoff / Retornar</button>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+
 <script>
+/* -------- PARTE ORIGINAL (100% intacta) -------- */
+
 let dati = [];
 
 function normalize(text) {
@@ -206,14 +278,68 @@ function aggiornaTabella(lista) {
         tbody.appendChild(tr);
     });
 }
+
+/* -------- NOVA PARTE (ETAPA 02.1) -------- */
+
+const URL_ASSISTENTE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
+
+let listaCredenciais = [];
+let usuarioAtual = "";
+
+document.getElementById("btnAccesso").onclick = () => {
+    document.getElementById("loginModal").style.display = "flex";
+};
+
+function fecharLogin() {
+    document.getElementById("loginModal").style.display = "none";
+}
+
+function logout() {
+    document.getElementById("painelModal").style.display = "none";
+    usuarioAtual = "";
+}
+
+Papa.parse(URL_ASSISTENTE, {
+    download: true,
+    complete: function(results) {
+        const linhas = results.data.slice(1);
+        const select = document.getElementById("listaUsuarios");
+
+        linhas.forEach(linha => {
+            const user = linha[0]?.trim();
+            const pass = linha[1]?.trim();
+
+            if(user && pass) {
+                listaCredenciais.push({ user, pass });
+
+                const opt = document.createElement("option");
+                opt.value = user;
+                opt.textContent = user;
+                select.appendChild(opt);
+            }
+        });
+    }
+});
+
+function fazerLogin() {
+    const user = document.getElementById("listaUsuarios").value;
+    const pass = document.getElementById("senha").value;
+
+    const valido = listaCredenciais.find(u => 
+        u.user === user && u.pass === pass
+    );
+
+    if(valido) {
+        usuarioAtual = user;
+        document.getElementById("loginModal").style.display = "none";
+        document.getElementById("painelModal").style.display = "flex";
+        document.getElementById("userLogado").textContent = "Utente: " + user;
+        document.getElementById("senha").value = "";
+    } else {
+        alert("Usuário ou senha incorretos");
+    }
+}
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
