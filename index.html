@@ -355,14 +355,14 @@ function carregarTabelaAprovador(usuarioLogado) {
     const tabela = document.createElement("table");
     tabela.id = "tabelaAprovador";
 
-    // Cabeçalho
+    // Cabeçalho em italiano
     tabela.innerHTML = `
         <thead>
             <tr>
-                <th>Setor</th>
+                <th>Settore</th>
                 <th>Tipo</th>
                 <th>Descrizione</th>
-                <th>Nova Revisao</th>
+                <th>Nuova Revisione</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -370,6 +370,36 @@ function carregarTabelaAprovador(usuarioLogado) {
 
     tableWrapper.appendChild(tabela);
     container.appendChild(tableWrapper);
+
+    // CSS específico para a tabela da Página 2
+    const style = document.createElement("style");
+    style.textContent = `
+        #tabelaAprovador {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        #tabelaAprovador th, #tabelaAprovador td {
+            border: 1px solid black;
+            padding: 8px;
+            font-size: 14px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        #tabelaAprovador th {
+            background-color: #e0e0e0;
+            position: sticky;
+            top: 0;
+        }
+        #tabelaAprovador th:nth-child(1), #tabelaAprovador td:nth-child(1) { width: 20%; }
+        #tabelaAprovador th:nth-child(2), #tabelaAprovador td:nth-child(2) { width: 20%; }
+        #tabelaAprovador th:nth-child(3), #tabelaAprovador td:nth-child(3) { width: 45%; }
+        #tabelaAprovador th:nth-child(4), #tabelaAprovador td:nth-child(4) { width: 15%; }
+        #tabelaAprovador tbody tr:nth-child(odd) { background-color: white; }
+        #tabelaAprovador tbody tr:nth-child(even) { background-color: rgb(230,245,230); }
+        #tabelaAprovador tbody tr:hover { background-color: #a8cfff; cursor: pointer; }
+    `;
+    document.head.appendChild(style);
 
     // Carrega CSV
     Papa.parse(urlPlanilha, {
@@ -400,7 +430,6 @@ function carregarTabelaAprovador(usuarioLogado) {
                         const id = link.split("/d/")[1].split("/")[0];
                         link = `https://drive.google.com/file/d/${id}/preview`;
                     }
-                    tr.style.cursor = "pointer";
                     tr.onclick = () => window.open(link, "_blank");
                 }
 
