@@ -283,15 +283,11 @@ Papa.parse(URL_ASSISTENTE,{
     header:true,
     complete:r=>{
         const s=document.getElementById("listaUsuarios");
-
         r.data.forEach(l=>{
-            // Usa o nome real da coluna da planilha
             const usuario = (l.Utente || l.Usuario || Object.values(l)[0] || "").trim();
             const senha   = (l.Password || l.Senha   || Object.values(l)[1] || "").trim();
-
             if(usuario && senha){
                 cred.push({u:usuario,p:senha});
-
                 const o=document.createElement("option");
                 o.value=usuario;
                 o.textContent=usuario;
@@ -335,8 +331,21 @@ function carregarTabelaAprovador(u){
   r.data.filter(i=>i.Step_atual?.trim()===u).forEach(i=>{
    const tr=document.createElement("tr");
    tr.innerHTML=`<td class="checkbox-cell"><input type="checkbox"></td><td>${i.Setor||""}</td><td>${i.Tipo||""}</td><td>${i.Descricao||""}</td><td>${i.Nova_Revisao||""}</td>`;
+
    const cb=tr.querySelector("input");
    cb.addEventListener("change",()=>{document.querySelectorAll('#tabelaAprovador input').forEach(x=>{if(x!==cb)x.checked=false;});});
+
+   // Abrir link da linha, se existir
+   if(i.Link){
+       let link=i.Link;
+       let id="";
+       if(link.includes("/d/")) id=link.split("/d/")[1].split("/")[0];
+       else if(link.includes("id=")) id=link.split("id=")[1].split("&")[0];
+       if(id) link="https://drive.google.com/file/d/"+id+"/preview";
+       tr.style.cursor="pointer";
+       tr.onclick = (e)=>{ if(e.target.type !== "checkbox") window.open(link,"_blank"); };
+   }
+
    body.appendChild(tr);
   });
  }});
