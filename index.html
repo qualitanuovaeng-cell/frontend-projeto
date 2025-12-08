@@ -361,17 +361,17 @@ function carregarTabelaAprovador(u){
 }
 
 // === BOTÕES APROVAR/REPROVAR ===
-const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxIMBtRCgLBEcnWqrr66Hzo4IuX03cY_8qzdAQhPk-PdiEcorMgLMQxRscUqbGMFI-09Q/exec";
+const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxmMNI43NaP5fBo9crgB9eF52iXuMzKbig1Lxs7Hg52/dev";
 
-document.getElementById("btnAprovar").addEventListener("click", ()=>processarAcaoGET("APPROVATO"));
-document.getElementById("btnReprovar").addEventListener("click", ()=>processarAcaoGET("RIFIUTATO"));
+document.getElementById("btnAprovar").addEventListener("click", ()=>processarAcao("APPROVATO"));
+document.getElementById("btnReprovar").addEventListener("click", ()=>processarAcao("RIFIUTATO"));
 
 function getDocumentoSelecionado() {
     const cb = document.querySelector('#tabelaAprovador input[type="checkbox"]:checked');
     return cb ? cb.closest("tr") : null;
 }
 
-function processarAcaoGET(status){
+function processarAcao(status){
     const linha = getDocumentoSelecionado();
     if(!linha){ 
         alert("Seleziona un documento prima di continuare."); 
@@ -388,19 +388,18 @@ function processarAcaoGET(status){
         status: status
     };
 
-    // Serializa em query string
-    const query = new URLSearchParams(dati).toString();
-    const url = URL_WEBAPP + "?" + query;
-
-    fetch(url)
-        .then(res => res.json())
-        .then(res => {
-            if(res.status === "OK") alert("Operazione completata con successo!");
-            else alert("Errore durante il salvataggio: " + res.message);
-        })
-        .catch(err => alert("Errore di rete o Fetch: " + err));
+    fetch(URL_WEBAPP, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dati)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.message === "OK") alert("Operazione completata con successo!");
+        else alert("Errore durante il salvataggio: " + res.message);
+    })
+    .catch(err => alert("Errore di rete o Fetch: " + err));
 }
-
 
 </script>
 
