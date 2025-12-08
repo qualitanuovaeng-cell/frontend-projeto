@@ -95,6 +95,25 @@ th {
     top: 0;
 }
 
+#btnAprovar, #btnReprovar {
+    width: 150px;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: 2px solid black;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+}
+
+#btnAprovar {
+    background-color: #2e7d32; /* Verde */
+}
+
+#btnReprovar {
+    background-color: #c62828; /* Vermelho */
+}
+
+
 #tabela th:nth-child(1), #tabela td:nth-child(1) { width: 20%; }
 #tabela th:nth-child(2), #tabela td:nth-child(2) { width: 20%; }
 #tabela th:nth-child(3), #tabela td:nth-child(3) { width: 60%; }
@@ -236,6 +255,13 @@ tbody tr:hover { background-color: #a8cfff; }
     <div class="aprovador-container">
         <h1>Area approvatori</h1>
         <p id="userLogado"></p>
+
+        <!-- BOTÕES NOVOS -->
+        <div style="display:flex; gap:10px; margin:10px 0;">
+            <button id="btnAprovar">Approvare</button>
+            <button id="btnReprovar">Rifiutare</button>
+        </div>
+
         <div id="tabelaAprovadorWrapper"></div>
     </div>
 </div>
@@ -350,6 +376,70 @@ function carregarTabelaAprovador(u){
   });
  }});
 }
+
+
+
+
+// === ETAPA 2.3.1 - LÓGICA DOS BOTÕES ===
+
+// Pega linha selecionada
+function getDocumentoSelecionado() {
+    const checkboxes = document.querySelectorAll('#tabelaAprovador input[type="checkbox"]');
+    let linhaSelecionada = null;
+
+    checkboxes.forEach(cb => {
+        if(cb.checked) {
+            linhaSelecionada = cb.closest("tr");
+        }
+    });
+
+    return linhaSelecionada;
+}
+
+document.getElementById("btnAprovar").addEventListener("click", function () {
+    const linha = getDocumentoSelecionado();
+
+    if (!linha) {
+        alert("Selezionare un documento prima di approvare.");
+        return;
+    }
+
+    const colunas = linha.querySelectorAll("td");
+
+    const dados = {
+        setor: colunas[1].innerText,
+        tipo: colunas[2].innerText,
+        descricao: colunas[3].innerText,
+        revisao: colunas[4].innerText,
+        status: "APPROVATO"
+    };
+
+    console.log("APROVAÇÃO:", dados);
+    alert("Documento pronto per APPORVAZIONE (logica pronta)");
+});
+
+document.getElementById("btnReprovar").addEventListener("click", function () {
+    const linha = getDocumentoSelecionado();
+
+    if (!linha) {
+        alert("Selezionare un documento prima di rifiutare.");
+        return;
+    }
+
+    const colunas = linha.querySelectorAll("td");
+
+    const dados = {
+        setor: colunas[1].innerText,
+        tipo: colunas[2].innerText,
+        descricao: colunas[3].innerText,
+        revisao: colunas[4].innerText,
+        status: "RIFIUTATO"
+    };
+
+    console.log("REPROVAÇÃO:", dados);
+    alert("Documento pronto per RIFIUTO (logica pronta)");
+});
+
 </script>
 
 </body>
