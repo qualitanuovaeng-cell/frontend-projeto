@@ -361,7 +361,7 @@ function carregarTabelaAprovador(u){
 }
 
 // === BOTÕES APROVAR/REPROVAR ===
-const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxFebhnNePSZrar0TSdncoEpkwWGCquNKe8CWfEuvJgA_4hHsNKcrJoEzd7u-An93YhiA/exec";
+const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbwaEBvYKyNrnPLUqYviCb-0xJq25ZLiJu36gT5EA6LxVFBoen5EmQPEJLQiqF2tJVwD6Q/exec";
 
 document.getElementById("btnAprovar").addEventListener("click", ()=>processarAcao("APPROVATO"));
 document.getElementById("btnReprovar").addEventListener("click", ()=>processarAcao("RIFIUTATO"));
@@ -373,7 +373,10 @@ function getDocumentoSelecionado() {
 
 function processarAcao(status){
     const linha = getDocumentoSelecionado();
-    if(!linha){ alert("Seleziona un documento prima di continuare."); return; }
+    if(!linha){ 
+        alert("Seleziona un documento prima di continuare."); 
+        return; 
+    }
 
     const colunas = linha.querySelectorAll("td");
     const dati = {
@@ -386,15 +389,15 @@ function processarAcao(status){
     };
 
     fetch(URL_WEBAPP,{
-    method:"POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(dati)
-})
-
+        method:"POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dati)
+    })
     .then(res=>res.text())
-    .then(()=>alert("Operazione completata con successo!"))
-    .catch(()=>alert("Errore durante il salvataggio."));
+    .then(() => alert("Operazione completata con successo!"))
+    .catch(() => alert("Errore durante il salvataggio."));
 }
+
 </script>
 
 </body>
