@@ -2,19 +2,17 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Teste Proxy GAS</title>
+<title>Teste Fetch Proxy GAS</title>
 </head>
 <body>
-
-<h2>Teste Proxy GAS</h2>
-<button id="btnTeste">Enviar POST</button>
-<pre id="resposta"></pre>
+<h1>Teste Fetch Proxy GAS</h1>
+<button id="btnTeste">Enviar Dados</button>
 
 <script>
-const URL_PROXY = "https://script.google.com/macros/s/AKfycbzqce1nxPGWR_wjW3EQ9HVz-7CbwY6khNUTEQmVV9gLYb0Uhl9sFg9oZL8AbUEyDfknhw/exec";
+const URL_PROXY = "https://script.google.com/macros/s/AKfycbzk0ANxEULuXpIQrgmJq3hB4MwpEHj0lcMPFpbWpttdLF7VJvwZXZWTCbmIvXlVbiyN/exec";
 
 document.getElementById("btnTeste").addEventListener("click", () => {
-    const dados = { teste: "123" };
+    const dados = { teste: "123", usuario: "Fulano" };
 
     fetch(URL_PROXY, {
         method: "POST",
@@ -23,13 +21,15 @@ document.getElementById("btnTeste").addEventListener("click", () => {
     })
     .then(res => res.json())
     .then(res => {
-        document.getElementById("resposta").textContent = JSON.stringify(res, null, 2);
+        alert("Resposta recebida do proxy:\n" + JSON.stringify(res));
     })
-    .catch(err => {
-        document.getElementById("resposta").textContent = "Erro: " + err;
-    });
+    .catch(err => alert("Erro de fetch: " + err));
 });
 </script>
+</body>
+</html>
+
 
 </body>
 </html>
+
