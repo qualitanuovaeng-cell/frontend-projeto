@@ -361,7 +361,7 @@ function carregarTabelaAprovador(u){
 }
 
 // === BOTÕES APROVAR/REPROVAR ===
-const URL_WEBAPP = "https://script.google.com/macros/s/SEU_WEBAPP_ID/exec";
+const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbzTJ_ulC2M5RLKgxyWel9xwvmA7Qq77J-zIYMmw942bSL1kiGdcEkfNCLte4yuMq83JtQ/exec";
 
 document.getElementById("btnAprovar").addEventListener("click", ()=>processarAcao("APPROVATO"));
 document.getElementById("btnReprovar").addEventListener("click", ()=>processarAcao("RIFIUTATO"));
@@ -386,9 +386,11 @@ function processarAcao(status){
     };
 
     fetch(URL_WEBAPP,{
-        method:"POST",
-        body: JSON.stringify(dati)
-    })
+    method:"POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dati)
+})
+
     .then(res=>res.text())
     .then(()=>alert("Operazione completata con successo!"))
     .catch(()=>alert("Errore durante il salvataggio."));
