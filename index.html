@@ -95,25 +95,6 @@ th {
     top: 0;
 }
 
-#btnAprovar, #btnReprovar {
-    width: 150px;
-    padding: 10px 0;
-    border-radius: 10px;
-    border: 2px solid black;
-    font-weight: bold;
-    cursor: pointer;
-    color: white;
-}
-
-#btnAprovar {
-    background-color: #2e7d32; /* Verde */
-}
-
-#btnReprovar {
-    background-color: #c62828; /* Vermelho */
-}
-
-
 #tabela th:nth-child(1), #tabela td:nth-child(1) { width: 20%; }
 #tabela th:nth-child(2), #tabela td:nth-child(2) { width: 20%; }
 #tabela th:nth-child(3), #tabela td:nth-child(3) { width: 60%; }
@@ -206,6 +187,9 @@ tbody tr:hover { background-color: #a8cfff; }
 #tabelaAprovador tbody tr:hover{background:#a8cfff;}
 
 .checkbox-cell{text-align:center;}
+
+#btnAprovar { background-color: #2e7d32; color:white; border:2px solid black; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; }
+#btnReprovar { background-color: #c62828; color:white; border:2px solid black; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; }
 </style>
 </head>
 
@@ -361,7 +345,6 @@ function carregarTabelaAprovador(u){
    const cb=tr.querySelector("input");
    cb.addEventListener("change",()=>{document.querySelectorAll('#tabelaAprovador input').forEach(x=>{if(x!==cb)x.checked=false;});});
 
-   // Abrir link da linha, se existir
    if(i.Link){
        let link=i.Link;
        let id="";
@@ -377,92 +360,22 @@ function carregarTabelaAprovador(u){
  }});
 }
 
+// === BOTÕES APROVAR/REPROVAR ===
+const URL_WEBAPP = "https://script.google.com/macros/s/SEU_WEBAPP_ID/exec";
 
+document.getElementById("btnAprovar").addEventListener("click", ()=>processarAcao("APPROVATO"));
+document.getElementById("btnReprovar").addEventListener("click", ()=>processarAcao("RIFIUTATO"));
 
-
-// === ETAPA 2.3.1 - LÓGICA DOS BOTÕES ===
-
-// Pega linha selecionada
 function getDocumentoSelecionado() {
-    const checkboxes = document.querySelectorAll('#tabelaAprovador input[type="checkbox"]');
-    let linhaSelecionada = null;
-
-    checkboxes.forEach(cb => {
-        if(cb.checked) {
-            linhaSelecionada = cb.closest("tr");
-        }
-    });
-
-    return linhaSelecionada;
+    const cb = document.querySelector('#tabelaAprovador input[type="checkbox"]:checked');
+    return cb ? cb.closest("tr") : null;
 }
 
-document.getElementById("btnAprovar").addEventListener("click", function () {
+function processarAcao(status){
     const linha = getDocumentoSelecionado();
-
-    if (!linha) {
-        alert("Selezionare un documento prima di approvare.");
-        return;
-    }
+    if(!linha){ alert("Seleziona un documento prima di continuare."); return; }
 
     const colunas = linha.querySelectorAll("td");
-
-    const dados = {
-        setor: colunas[1].innerText,
-        tipo: colunas[2].innerText,
-        descricao: colunas[3].innerText,
-        revisao: colunas[4].innerText,
-        status: "APPROVATO"
-    };
-
-    console.log("APROVAÇÃO:", dados);
-    alert("Documento pronto per APPORVAZIONE (logica pronta)");
-});
-
-document.getElementById("btnReprovar").addEventListener("click", function () {
-    const linha = getDocumentoSelecionado();
-
-    if (!linha) {
-        alert("Selezionare un documento prima di rifiutare.");
-        return;
-    }
-
-    const colunas = linha.querySelectorAll("td");
-
-    const dados = {
-        setor: colunas[1].innerText,
-        tipo: colunas[2].innerText,
-        descricao: colunas[3].innerText,
-        revisao: colunas[4].innerText,
-        status: "RIFIUTATO"
-    };
-
-    console.log("REPROVAÇÃO:", dados);
-    alert("Documento pronto per RIFIUTO (logica pronta)");
-});
-
-
-const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxFebhnNePSZrar0TSdncoEpkwWGCquNKe8CWfEuvJgA_4hHsNKcrJoEzd7u-An93YhiA/exec";
-
-
-function aprovarDocumento() {
-    processarAcao("APPROVATO");
-}
-
-function reprovarDocumento() {
-    processarAcao("RIFIUTATO");
-}
-
-function processarAcao(status) {
-    const selecionado = document.querySelector('#tabelaAprovador input[type="checkbox"]:checked');
-
-    if(!selecionado) {
-        alert("Seleziona un documento prima di continuare.");
-        return;
-    }
-
-    const linha = selecionado.closest("tr");
-    const colunas = linha.querySelectorAll("td");
-
     const dati = {
         settore: colunas[1].textContent,
         tipo: colunas[2].textContent,
@@ -472,20 +385,14 @@ function processarAcao(status) {
         status: status
     };
 
-    fetch(URL_WEBAPP, {
-        method: "POST",
+    fetch(URL_WEBAPP,{
+        method:"POST",
         body: JSON.stringify(dati)
     })
-    .then(res => res.text())
-    .then(() => {
-        alert("Operazione completata con successo!");
-    })
-    .catch(() => {
-        alert("Errore durante il salvataggio.");
-    });
+    .then(res=>res.text())
+    .then(()=>alert("Operazione completata con successo!"))
+    .catch(()=>alert("Errore durante il salvataggio."));
 }
-
-
 </script>
 
 </body>
