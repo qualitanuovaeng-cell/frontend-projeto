@@ -389,14 +389,17 @@ function processarAcao(status){
     };
 
     fetch(URL_WEBAPP,{
-        method:"POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dati)
-    })
-    .then(res=>res.text())
-    .then(() => alert("Operazione completata con successo!"))
-    .catch(() => alert("Errore durante il salvataggio."));
-}
+    method:"POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dati)
+})
+.then(res => res.json())
+.then(res => {
+    if(res.status === "OK") alert("Operazione completata con successo!");
+    else alert("Errore durante il salvataggio: " + res.message);
+})
+.catch(err => alert("Errore di rete o Fetch: " + err));
+
 
 </script>
 
