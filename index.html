@@ -217,6 +217,12 @@ tbody tr:hover { background-color: #a8cfff; }
     <button id="btnRetornar" onclick="logout()" style="display:none;">Ritornare</button>
 </div>
 
+<div style="margin-top:15px; display:flex; gap:10px;">
+    <button onclick="aprovarDocumento()" style="background:#2ecc71; border:2px solid black; border-radius:10px; padding:10px 20px; font-weight:bold;">Approvare</button>
+    <button onclick="reprovarDocumento()" style="background:#e74c3c; border:2px solid black; border-radius:10px; padding:10px 20px; font-weight:bold;">Rifiutare</button>
+</div>
+
+
 <!-- TELA 1 -->
 <div class="main-container" id="paginaPrincipal">
     <h1>Visualizzatore di documenti</h1>
@@ -439,6 +445,52 @@ document.getElementById("btnReprovar").addEventListener("click", function () {
     console.log("REPROVAÇÃO:", dados);
     alert("Documento pronto per RIFIUTO (logica pronta)");
 });
+
+
+const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxFebhnNePSZrar0TSdncoEpkwWGCquNKe8CWfEuvJgA_4hHsNKcrJoEzd7u-An93YhiA/exec";
+
+
+function aprovarDocumento() {
+    processarAcao("APPROVATO");
+}
+
+function reprovarDocumento() {
+    processarAcao("RIFIUTATO");
+}
+
+function processarAcao(status) {
+    const selecionado = document.querySelector('#tabelaAprovador input[type="checkbox"]:checked');
+
+    if(!selecionado) {
+        alert("Seleziona un documento prima di continuare.");
+        return;
+    }
+
+    const linha = selecionado.closest("tr");
+    const colunas = linha.querySelectorAll("td");
+
+    const dati = {
+        settore: colunas[1].textContent,
+        tipo: colunas[2].textContent,
+        descrizione: colunas[3].textContent,
+        revisione: colunas[4].textContent,
+        utente: document.getElementById("userLogado").textContent.replace("Utente: ",""),
+        status: status
+    };
+
+    fetch(URL_WEBAPP, {
+        method: "POST",
+        body: JSON.stringify(dati)
+    })
+    .then(res => res.text())
+    .then(() => {
+        alert("Operazione completata con successo!");
+    })
+    .catch(() => {
+        alert("Errore durante il salvataggio.");
+    });
+}
+
 
 </script>
 
