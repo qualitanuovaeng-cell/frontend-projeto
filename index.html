@@ -166,37 +166,40 @@ tbody tr:hover { background-color: #a8cfff; }
     gap: 10px;
 }
 
-#tabelaAprovadorWrapper {
-    margin-top: 20px;
-}
+/* COLUNAS DA TABELA DO APROVADOR (5 COLUNAS) */
+#tabelaAprovador th:nth-child(1),
+#tabelaAprovador td:nth-child(1) { width: 10%; }
 
-/* Largura colunas e cores tabela aprovador */
-#tabelaAprovador th:nth-child(1), #tabelaAprovador td:nth-child(1) { width: 10%; }
-#tabelaAprovador th:nth-child(2), #tabelaAprovador td:nth-child(2) { width: 15%; }
-#tabelaAprovador th:nth-child(3), #tabelaAprovador td:nth-child(3) { width: 60%; }
-#tabelaAprovador th:nth-child(4), #tabelaAprovador td:nth-child(4) { width: 15%; }
+#tabelaAprovador th:nth-child(2),
+#tabelaAprovador td:nth-child(2) { width: 15%; }
+
+#tabelaAprovador th:nth-child(3),
+#tabelaAprovador td:nth-child(3) { width: 15%; }
+
+#tabelaAprovador th:nth-child(4),
+#tabelaAprovador td:nth-child(4) { width: 45%; }
+
+#tabelaAprovador th:nth-child(5),
+#tabelaAprovador td:nth-child(5) { width: 15%; }
 
 #tabelaAprovador tbody tr:nth-child(odd) { background-color: white; }
 #tabelaAprovador tbody tr:nth-child(even) { background-color: rgb(230,245,230); }
-#tabelaAprovador tbody tr:hover { background-color: #a8cfff; cursor: pointer; }
+#tabelaAprovador tbody tr:hover { background-color: #a8cfff; }
 
 /* Checkboxes */
-.checkbox-cell {
-    text-align: center;
-}
+.checkbox-cell { text-align: center; }
 </style>
 </head>
 
 <body>
 
-<!-- LOGO -->
 <div class="logo-area">
     <img src="Logotipo.png">
     <button id="btnAccesso">Accesso approvatori</button>
     <button id="btnRetornar" onclick="logout()" style="display:none;">Ritornare</button>
 </div>
 
-<!-- TELA PRINCIPAL -->
+<!-- TELA 01 -->
 <div class="main-container" id="paginaPrincipal">
     <h1>Visualizzatore di documenti</h1>
 
@@ -233,188 +236,105 @@ tbody tr:hover { background-color: #a8cfff; }
   </div>
 </div>
 
-<!-- PAGINA APROVADOR -->
+<!-- TELA 02 -->
 <div id="paginaAprovador" class="pagina-aprovador">
     <div class="aprovador-container">
         <h1>Area approvatori</h1>
         <p id="userLogado"></p>
-
         <div id="tabelaAprovadorWrapper"></div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
-// === Código 01 - Tela Principal e Login ===
-let dati = [];
+let dati=[];
 
-function normalize(text) {
-    return text.normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]/g, " ")
-        .toLowerCase();
-}
+function normalize(t){return t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]/g," ").toLowerCase();}
+function mapColumns(i){return{Settore:i.Setor||"",Tipo:i.Tipo||"",Descrizione:i.Descricao||"",Link:i.Link||""};}
 
-function mapColumns(item) {
-    return {
-        Settore: item.Setor || "",
-        Tipo: item.Tipo || "",
-        Descrizione: item.Descricao || "",
-        Link: item.Link || ""
-    };
-}
+Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv",{download:true,header:true,complete:r=>dati=r.data.map(mapColumns)});
 
-// Carrega tabela principal
-Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?output=csv", {
-    download: true,
-    header: true,
-    complete: r => dati = r.data.map(mapColumns)
+document.getElementById("busca").addEventListener("keyup",function(){
+   const f=normalize(this.value);
+   if(!f) return updateTable([]);
+   updateTable(dati.filter(i=>
+     normalize(i.Settore).includes(f)||
+     normalize(i.Tipo).includes(f)||
+     normalize(i.Descrizione).includes(f)
+   ));
 });
 
-document.getElementById("busca").addEventListener("keyup", function () {
-    const filtro = normalize(this.value);
-    if (!filtro) return updateTable([]);
-    updateTable(dati.filter(i =>
-        normalize(i.Settore).includes(filtro) ||
-        normalize(i.Tipo).includes(filtro) ||
-        normalize(i.Descrizione).includes(filtro)
-    ));
-});
-
-function updateTable(lista){
-    const tb=document.querySelector("#tabela tbody");
-    tb.innerHTML="";
-    lista.forEach(item=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${item.Settore}</td><td>${item.Tipo}</td><td>${item.Descricao}</td>`;
-        if(item.Link){
-            let link=item.Link;
-            if(link.includes("drive.google.com")){
-                const id=link.split("/d/")[1].split("/")[0];
-                link=`https://drive.google.com/file/d/${id}/preview`;
-            }
-            tr.style.cursor="pointer";
-            tr.onclick=()=>window.open(link,"_blank");
-        }
-        tb.appendChild(tr);
-    });
+function updateTable(l){
+ const tb=document.querySelector("#tabela tbody");tb.innerHTML="";
+ l.forEach(i=>{
+   const tr=document.createElement("tr");
+   tr.innerHTML=`<td>${i.Settore}</td><td>${i.Tipo}</td><td>${i.Descrizione}</td>`;
+   if(i.Link){
+     let link=i.Link;
+     if(link.includes("drive.google.com")){
+        const id=link.split("/d/")[1].split("/")[0];
+        link=`https://drive.google.com/file/d/${id}/preview`;
+     }
+     tr.onclick=()=>window.open(link,"_blank");
+   }
+   tb.appendChild(tr);
+ });
 }
 
-// Login
+/* LOGIN */
 const URL_ASSISTENTE="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=1082523786&single=true&output=csv";
-let credenciais=[];
-
-Papa.parse(URL_ASSISTENTE,{
-    download:true,
-    complete:r=>{
-        const sel=document.getElementById("listaUsuarios");
-        r.data.slice(1).forEach(l=>{
-            if(l[0] && l[1]){
-                credenciais.push({u:l[0].trim(),p:l[1].trim()});
-                const o=document.createElement("option");
-                o.value=l[0];
-                o.textContent=l[0];
-                sel.appendChild(o);
-            }
-        });
-    }
-});
+let cred=[];
+Papa.parse(URL_ASSISTENTE,{download:true,complete:r=>{
+ const s=document.getElementById("listaUsuarios");
+ r.data.slice(1).forEach(l=>{
+  if(l[0]&&l[1]){cred.push({u:l[0].trim(),p:l[1].trim()});
+   const o=document.createElement("option");o.value=l[0];o.textContent=l[0];s.appendChild(o);}
+ });
+}});
 
 document.getElementById("btnAccesso").onclick=()=>{
-    document.getElementById("listaUsuarios").value="";
-    document.getElementById("senha").value="";
-    document.getElementById("loginModal").style.display="flex";
+ document.getElementById("listaUsuarios").value="";
+ document.getElementById("senha").value="";
+ document.getElementById("loginModal").style.display="flex";
 }
-
-function fecharLogin(){ document.getElementById("loginModal").style.display="none"; }
+function fecharLogin(){document.getElementById("loginModal").style.display="none";}
 
 function fazerLogin(){
-    const u=document.getElementById("listaUsuarios").value;
-    const p=document.getElementById("senha").value;
-    const ok=credenciais.find(x=>x.u===u && x.p===p);
-    
-    if(ok){
-        document.getElementById("loginModal").style.display="none";
-        document.getElementById("paginaPrincipal").style.display="none";
-        document.getElementById("paginaAprovador").style.display="block";
-        document.getElementById("userLogado").textContent="Utente: "+u;
-
-        // Ajusta botões
-        document.getElementById("btnAccesso").style.display="none";
-        document.getElementById("btnRetornar").style.display="block";
-
-        // Chama tabela 02
-        carregarTabelaAprovador(u);
-    } else alert("Credenziali errate");
+ const u=document.getElementById("listaUsuarios").value;
+ const p=document.getElementById("senha").value;
+ const ok=cred.find(x=>x.u===u&&x.p===p);
+ if(ok){
+  document.getElementById("loginModal").style.display="none";
+  document.getElementById("paginaPrincipal").style.display="none";
+  document.getElementById("paginaAprovador").style.display="block";
+  document.getElementById("userLogado").textContent="Utente: "+u;
+  document.getElementById("btnAccesso").style.display="none";
+  document.getElementById("btnRetornar").style.display="block";
+  carregarTabelaAprovador(u);
+ }else alert("Credenziali errate");
 }
 
-function logout(){
-    location.reload();
-}
+function logout(){location.reload();}
 
-// === Código 02 - Tela Aprovador / Tabela filtrada ===
-function carregarTabelaAprovador(usuarioLogado){
-    const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=957497978&single=true&output=csv";
-    const wrapper = document.getElementById("tabelaAprovadorWrapper");
-    wrapper.innerHTML="";
+// TABELA APROVADOR
+function carregarTabelaAprovador(u){
+ const url="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNd8ngFjnAI7X8Kwh-uxCveqFJv85CaFcjLD7S8aKSXVITSqyOyCQ9C5y1CIjX8t4uqtt7FFuQ1d7O/pub?gid=957497978&single=true&output=csv";
+ const w=document.getElementById("tabelaAprovadorWrapper");w.innerHTML="";
+ const tbl=document.createElement("table");
+ tbl.id="tabelaAprovador";
+ tbl.innerHTML=`<thead><tr><th>Sel.</th><th>Settore</th><th>Tipo</th><th>Descrizione</th><th>Nuova Revisione</th></tr></thead><tbody></tbody>`;
+ w.appendChild(tbl);
 
-    const tableWrapper=document.createElement("div");
-    tableWrapper.className="table-wrapper";
-
-    const tabela=document.createElement("table");
-    tabela.id="tabelaAprovador";
-    tabela.innerHTML=`
-        <thead>
-            <tr>
-                <th>Seleziona</th>
-                <th>Settore</th>
-                <th>Tipo</th>
-                <th>Descrizione</th>
-                <th>Nuova Revisione</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    `;
-    tableWrapper.appendChild(tabela);
-    wrapper.appendChild(tableWrapper);
-
-    Papa.parse(urlPlanilha,{download:true,header:true,complete:function(results){
-        const dados=results.data;
-        const filtrados=dados.filter(item=>item.Step_atual?.trim()===usuarioLogado);
-        const tbody=tabela.querySelector("tbody");
-        tbody.innerHTML="";
-
-        filtrados.forEach(item=>{
-            const tr=document.createElement("tr");
-            tr.innerHTML=`
-                <td class="checkbox-cell"><input type="checkbox" name="selecionado"></td>
-                <td>${item.Setor||""}</td>
-                <td>${item.Tipo||""}</td>
-                <td>${item.Descricao||""}</td>
-                <td>${item.Nova_Revisao||""}</td>
-            `;
-            if(item.Link){
-                let link=item.Link;
-                if(link.includes("drive.google.com")){
-                    const id=link.split("/d/")[1].split("/")[0];
-                    link=`https://drive.google.com/file/d/${id}/preview`;
-                }
-                tr.onclick=(e)=>{
-                    if(e.target.type!=="checkbox") window.open(link,"_blank");
-                };
-            }
-
-            // Permite selecionar apenas 1 checkbox
-            tr.querySelector('input[type="checkbox"]').addEventListener('click', function(){
-                const checkboxes=document.querySelectorAll('#tabelaAprovador input[type="checkbox"]');
-                checkboxes.forEach(cb=>{ if(cb!==this) cb.checked=false; });
-            });
-
-            tbody.appendChild(tr);
-        });
-    }});
+ Papa.parse(url,{download:true,header:true,complete:r=>{
+  const rows=r.data.filter(i=>i.Step_atual?.trim()===u);
+  const body=tbl.querySelector("tbody");body.innerHTML="";
+  rows.forEach(i=>{
+   const tr=document.createElement("tr");
+   tr.innerHTML=`<td class="checkbox-cell"><input type="checkbox"></td><td>${i.Setor||""}</td><td>${i.Tipo||""}</td><td>${i.Descricao||""}</td><td>${i.Nova_Revisao||""}</td>`;
+   body.appendChild(tr);
+  });
+ }});
 }
 </script>
-
 </body>
 </html>
