@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Teste Fetch Proxy GAS</title>
+</head>
+<body>
+<h1>Teste Fetch Proxy GAS</h1>
+<button id="btnTeste">Enviar Dados</button>
+
+<script>
+const URL_PROXY = "https://script.google.com/macros/s/AKfycbzk0ANxEULuXpIQrgmJq3hB4MwpEHj0lcMPFpbWpttdLF7VJvwZXZWTCbmIvXlVbiyN/exec";
+
+document.getElementById("btnTeste").addEventListener("click", () => {
+    const dados = { teste: "123", usuario: "Fulano" };
+
+    fetch(URL_PROXY, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+    })
+    .then(res => res.json())
+    .then(res => {
+        alert("Resposta recebida do proxy:\n" + JSON.stringify(res));
+    })
+    .catch(err => alert("Erro de fetch: " + err));
+});
+</script>
+</body>
+</html>
