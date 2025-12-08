@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Teste Proxy GAS</title>
+</head>
+<body>
+
+<h2>Teste Proxy GAS</h2>
+<button id="btnTeste">Enviar POST</button>
+<pre id="resposta"></pre>
+
+<script>
+const URL_PROXY = "https://script.google.com/macros/s/AKfycbzqce1nxPGWR_wjW3EQ9HVz-7CbwY6khNUTEQmVV9gLYb0Uhl9sFg9oZL8AbUEyDfknhw/exec";
+
+document.getElementById("btnTeste").addEventListener("click", () => {
+    const dados = { teste: "123" };
+
+    fetch(URL_PROXY, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+    })
+    .then(res => res.json())
+    .then(res => {
+        document.getElementById("resposta").textContent = JSON.stringify(res, null, 2);
+    })
+    .catch(err => {
+        document.getElementById("resposta").textContent = "Erro: " + err;
+    });
+});
+</script>
+
+</body>
+</html>
