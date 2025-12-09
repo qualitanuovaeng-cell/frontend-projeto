@@ -1,31 +1,42 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Teste Fetch Proxy GAS</title>
+  <meta charset="UTF-8">
+  <title>Teste Comunicação GAS</title>
 </head>
 <body>
-<h1>Teste Fetch Proxy GAS</h1>
-<button id="btnTeste">Enviar Dados</button>
+
+<h2>Teste Comunicação com Google Apps Script</h2>
+<button id="btnTeste">Testar Envio</button>
+<pre id="saida"></pre>
 
 <script>
-const URL_PROXY = "https://script.google.com/macros/s/AKfycbzk0ANxEULuXpIQrgmJq3hB4MwpEHj0lcMPFpbWpttdLF7VJvwZXZWTCbmIvXlVbiyN/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbyIaNCXuYHRUtkcguCbZrTAgQgrF4AVgrKqnOtkdbCqWX-MeGaeSbzhG02vzW_xnP__/exec";
 
 document.getElementById("btnTeste").addEventListener("click", () => {
-    const dados = { teste: "123", usuario: "Fulano" };
 
-    fetch(URL_PROXY, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dados)
+  const dados = new URLSearchParams({
+    nome: "Marcio",
+    status: "teste_ok"
+  });
+
+  const urlFinal = URL_GAS + "?" + dados.toString();
+
+  fetch(urlFinal)
+    .then(r => r.json())
+    .then(json => {
+      document.getElementById("saida").textContent =
+        JSON.stringify(json, null, 2);
     })
-    .then(res => res.json())
-    .then(res => {
-        alert("Resposta recebida do proxy:\n" + JSON.stringify(res));
-    })
-    .catch(err => alert("Erro de fetch: " + err));
+    .catch(err => {
+      document.getElementById("saida").textContent =
+        "Erro: " + err;
+    });
+
 });
 </script>
+
 </body>
 </html>
+
 
