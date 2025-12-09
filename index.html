@@ -2,25 +2,25 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Teste Comunicação GAS</title>
+  <title>Teste gravar no Sheets</title>
 </head>
 <body>
 
-<h2>Teste Comunicação com Google Apps Script</h2>
-<button id="btnTeste">Testar Envio</button>
+<h2>Gravar nome no Google Sheets</h2>
+
+<input id="nome" placeholder="Digite um nome">
+<button id="btnGravar">Gravar</button>
+
 <pre id="saida"></pre>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycbyIaNCXuYHRUtkcguCbZrTAgQgrF4AVgrKqnOtkdbCqWX-MeGaeSbzhG02vzW_xnP__/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbw-9jJw26N1wHxHJm_SYm2huvZcOUuQeIwblDbRaX2H_MLyFioNIdA5NFj_tBv7lQ40CA/exec";
 
-document.getElementById("btnTeste").addEventListener("click", () => {
+document.getElementById("btnGravar").addEventListener("click", () => {
+  const nome = document.getElementById("nome").value;
 
-  const dados = new URLSearchParams({
-    nome: "Marcio",
-    status: "teste_ok"
-  });
-
-  const urlFinal = URL_GAS + "?" + dados.toString();
+  const params = new URLSearchParams({ nome });
+  const urlFinal = URL_GAS + "?" + params.toString();
 
   fetch(urlFinal)
     .then(r => r.json())
@@ -32,11 +32,12 @@ document.getElementById("btnTeste").addEventListener("click", () => {
       document.getElementById("saida").textContent =
         "Erro: " + err;
     });
-
 });
 </script>
 
 </body>
 </html>
+
+
 
 
