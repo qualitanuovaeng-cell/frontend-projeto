@@ -1,42 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Teste gravar no Sheets</title>
+<meta charset="UTF-8">
+<title>Teste Web App Google Sheets</title>
 </head>
 <body>
+<h2>Teste de envio para Google Sheets</h2>
 
-<h2>Gravar nome no Google Sheets</h2>
+<input type="text" id="nome" placeholder="Digite um nome">
+<button id="btnEnviar">Enviar</button>
 
-<input id="nome" placeholder="Digite um nome">
-<button id="btnGravar">Gravar</button>
-
-<pre id="saida"></pre>
+<p id="resposta"></p>
 
 <script>
-const URL_GAS = "https://script.google.com/macros/s/AKfycbw-9jJw26N1wHxHJm_SYm2huvZcOUuQeIwblDbRaX2H_MLyFioNIdA5NFj_tBv7lQ40CA/exec";
+const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbyldmoo31xrVEVLM0CIQpa5uZRzngbV24h0FYWH6dPAmYsEQeWHb78zEUmqlmxu2I9sUA/exec";
 
-document.getElementById("btnGravar").addEventListener("click", () => {
-  const nome = document.getElementById("nome").value;
+document.getElementById("btnEnviar").addEventListener("click", () => {
+    const nome = document.getElementById("nome").value;
+    if(!nome){
+        alert("Digite um nome antes de enviar!");
+        return;
+    }
 
-  const params = new URLSearchParams({ nome });
-  const urlFinal = URL_GAS + "?" + params.toString();
+    const dados = { gravar: nome };
 
-  fetch(urlFinal)
-    .then(r => r.json())
-    .then(json => {
-      document.getElementById("saida").textContent =
-        JSON.stringify(json, null, 2);
+    fetch(URL_WEBAPP, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+    })
+    .then(res => res.json())
+    .then(res => {
+        document.getElementById("resposta").textContent = JSON.stringify(res);
     })
     .catch(err => {
-      document.getElementById("saida").textContent =
-        "Erro: " + err;
+        document.getElementById("resposta").textContent = "Erro de rede ou Fetch: " + err;
     });
 });
 </script>
-
 </body>
 </html>
+
 
 
 
